@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Авторизация";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>LearnEnglish</h2>
+            <p class="subtitle">Начни учить английский сегодня!</p>
+        </div>
+
+        <div class="auth-tabs">
+            <button class="tab-btn active" data-tab="login">Вход</button>
+            <button class="tab-btn" data-tab="register">Регистрация</button>
+        </div>
+
+        <div id="login-form" class="auth-form active">
+            <div class="form-group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="login-email" placeholder="Email" required />
+            </div>
+            <div class="form-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="login-password" placeholder="Пароль" required />
+            </div>
+            <button onclick="login()" class="btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Войти
+            </button>
+            <div id="login-error" class="error-message"></div>
+        </div>
+
+        <div id="register-form" class="auth-form">
+            <div class="form-group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="register-username" placeholder="Имя пользователя" required />
+            </div>
+            <div class="form-group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="register-email" placeholder="Email" required />
+            </div>
+            <div class="form-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="register-password" placeholder="Пароль" required />
+            </div>
+            <div class="form-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="register-confirm" placeholder="Подтвердите пароль" required />
+            </div>
+            <button onclick="register()" class="btn-primary">
+                <i class="fas fa-user-plus"></i> Зарегистрироваться
+            </button>
+            <div id="register-error" class="error-message"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.API_URL = '/api';
+    </script>
+    <script src="~/js/auth.js"></script>
+}

@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Мой профиль";
+}
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>Мой профиль</h1>
+        <button onclick="logout()" class="btn-logout">Выйти</button>
+    </div>
+
+    <div class="profile-content" id="profile-content">
+        <div class="loading">Загрузка...</div>
+    </div>
+
+    <div class="user-stats">
+        <h3>Статистика</h3>
+        <div id="user-stats">
+            <!-- Статистика загрузится через JS -->
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/profile.js"></script>
+}
