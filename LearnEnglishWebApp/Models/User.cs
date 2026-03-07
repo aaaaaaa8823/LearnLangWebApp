@@ -33,6 +33,8 @@ namespace LearnEnglishWebApp.Models
 
         public ICollection<UserVocabProgress> VocabProgress { get; set; } = new List<UserVocabProgress>();
 
+        public ICollection<TestResult> TestResults { get; set; } = new List<TestResult>();
+
 
     }
     

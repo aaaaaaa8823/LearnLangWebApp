@@ -5,27 +5,33 @@ namespace LearnEnglishWebApp.Models
 {
     public class GrammarTopic
     {
-        //TODO: Написать модель для грамматическиз тестов и связать
         [Key]
         public long Id { get; set; }
 
         [MaxLength(10)]
-        public string Level {  get; set; }
+        [Required]
+        public string Level { get; set; }
 
         [Required]
         [MaxLength(200)]
         public string Title { get; set; }
 
+        [MaxLength(500)]
         public string Description { get; set; }
 
-        public string? Content { get; set; } //сюда html страницуу наверное?
+        [Required]
+        [MaxLength(100)]
+        public string ContentKey { get; set; } // например: "present-simple-theory"
 
-        [Column(TypeName = "jsonb")]
-        public List<string> Examples { get; set; }
+        public int OrderIndex { get; set; }
 
-        public int OrderIndex { get; set; } //для контроля порядка отображения грамматических тем
+        //Нужно чтобы отображать видимость темы для пользователя
+        public bool IsActive { get; set; } = true;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        public DateTime? UpdatedAt { get; set; }
+
+        public ICollection<GrammarTest> GrammarTests { get; set; } = new List<GrammarTest>();
         public ICollection<UserGrammarProgress> UserGrammarProgresses { get; set; } = new List<UserGrammarProgress>();
-
     }
 }

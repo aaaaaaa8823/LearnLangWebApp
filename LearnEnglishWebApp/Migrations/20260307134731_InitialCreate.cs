@@ -22,7 +22,7 @@ namespace LearnEnglishWebApp.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Word = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Translation = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Definition = table.Column<string>(type: "text", nullable: false),
+                    Definition = table.Column<string>(type: "text", nullable: true),
                     PartOfSpeech = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     DifficultyLevel = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     Examples = table.Column<string>(type: "jsonb", nullable: false),
@@ -41,10 +41,12 @@ namespace LearnEnglishWebApp.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Level = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    Examples = table.Column<string>(type: "jsonb", nullable: false),
-                    OrderIndex = table.Column<int>(type: "integer", nullable: false)
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    ContentKey = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    OrderIndex = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -76,13 +78,44 @@ namespace LearnEnglishWebApp.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Level = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    Questions = table.Column<List<VocabLesson.VocabQuestion>>(type: "jsonb", nullable: false),
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    ContentKey = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    VocabularyWordIds = table.Column<string>(type: "jsonb", nullable: false),
+                    OrderIndex = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_VocabLessons", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GrammarTests",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    GrammarTopicId = table.Column<long>(type: "bigint", nullable: false),
+                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Level = table.Column<string>(type: "text", nullable: false),
+                    QuestionCount = table.Column<int>(type: "integer", nullable: false),
+                    TestKey = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    PassingScore = table.Column<int>(type: "integer", nullable: false),
+                    OrderIndex = table.Column<int>(type: "integer", nullable: false),
+                    TimeLimitMinutes = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GrammarTests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GrammarTests_GrammarTopics_GrammarTopicId",
+                        column: x => x.GrammarTopicId,
+                        principalTable: "GrammarTopics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -93,7 +126,7 @@ namespace LearnEnglishWebApp.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     IsDefault = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -109,24 +142,29 @@ namespace LearnEnglishWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GameSessions",
+                name: "TestResults",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    GameType = table.Column<string>(type: "text", nullable: false),
+                    TestType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    TestId = table.Column<long>(type: "bigint", nullable: false),
+                    AttemptNumber = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     Score = table.Column<int>(type: "integer", nullable: false),
-                    CorrectAnswers = table.Column<int>(type: "integer", nullable: false),
-                    TotalQuestions = table.Column<int>(type: "integer", nullable: false),
+                    MaxScore = table.Column<int>(type: "integer", nullable: false),
+                    Percentage = table.Column<double>(type: "double precision", nullable: false),
+                    IsPassed = table.Column<bool>(type: "boolean", nullable: false),
                     TimeSpentSeconds = table.Column<int>(type: "integer", nullable: false),
-                    PlayedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CorrectAnswers = table.Column<int>(type: "integer", nullable: false),
+                    WrongAnswers = table.Column<int>(type: "integer", nullable: false),
+                    AnswerDetails = table.Column<List<TestAnswerDetail>>(type: "jsonb", nullable: false),
+                    CompletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GameSessions", x => x.Id);
+                    table.PrimaryKey("PK_TestResults", x => new { x.UserId, x.TestType, x.TestId, x.AttemptNumber });
                     table.ForeignKey(
-                        name: "FK_GameSessions_Users_UserId",
+                        name: "FK_TestResults_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -216,6 +254,36 @@ namespace LearnEnglishWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "VocabTests",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    VocabLessonId = table.Column<long>(type: "bigint", nullable: false),
+                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Level = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    TestKey = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    TestType = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    QuestionCount = table.Column<int>(type: "integer", nullable: false),
+                    PassingScore = table.Column<int>(type: "integer", nullable: false),
+                    TimeLimitMinutes = table.Column<int>(type: "integer", nullable: false),
+                    OrderIndex = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VocabTests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VocabTests_VocabLessons_VocabLessonId",
+                        column: x => x.VocabLessonId,
+                        principalTable: "VocabLessons",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CollectionsWords",
                 columns: table => new
                 {
@@ -263,9 +331,51 @@ namespace LearnEnglishWebApp.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_GameSessions_UserId",
-                table: "GameSessions",
-                column: "UserId");
+                name: "IX_GrammarTests_GrammarTopicId",
+                table: "GrammarTests",
+                column: "GrammarTopicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GrammarTests_Level_OrderIndex",
+                table: "GrammarTests",
+                columns: new[] { "Level", "OrderIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GrammarTests_TestKey",
+                table: "GrammarTests",
+                column: "TestKey",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GrammarTopics_ContentKey",
+                table: "GrammarTopics",
+                column: "ContentKey",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GrammarTopics_Level_OrderIndex",
+                table: "GrammarTopics",
+                columns: new[] { "Level", "OrderIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TestResults_CompletedAt",
+                table: "TestResults",
+                column: "CompletedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TestResults_IsPassed",
+                table: "TestResults",
+                column: "IsPassed");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TestResults_TestType",
+                table: "TestResults",
+                column: "TestType");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TestResults_TestType_TestId",
+                table: "TestResults",
+                columns: new[] { "TestType", "TestId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserGrammarProgress_GrammarTopicId",
@@ -304,6 +414,33 @@ namespace LearnEnglishWebApp.Migrations
                 name: "IX_UserVocabProgresses_LessonId",
                 table: "UserVocabProgresses",
                 column: "LessonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VocabLessons_ContentKey",
+                table: "VocabLessons",
+                column: "ContentKey",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VocabLessons_Level_OrderIndex",
+                table: "VocabLessons",
+                columns: new[] { "Level", "OrderIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VocabTests_Level_OrderIndex",
+                table: "VocabTests",
+                columns: new[] { "Level", "OrderIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VocabTests_TestKey",
+                table: "VocabTests",
+                column: "TestKey",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VocabTests_VocabLessonId",
+                table: "VocabTests",
+                column: "VocabLessonId");
         }
 
         /// <inheritdoc />
@@ -313,13 +450,19 @@ namespace LearnEnglishWebApp.Migrations
                 name: "CollectionsWords");
 
             migrationBuilder.DropTable(
-                name: "GameSessions");
+                name: "GrammarTests");
+
+            migrationBuilder.DropTable(
+                name: "TestResults");
 
             migrationBuilder.DropTable(
                 name: "UserGrammarProgress");
 
             migrationBuilder.DropTable(
                 name: "UserVocabProgresses");
+
+            migrationBuilder.DropTable(
+                name: "VocabTests");
 
             migrationBuilder.DropTable(
                 name: "Collections");

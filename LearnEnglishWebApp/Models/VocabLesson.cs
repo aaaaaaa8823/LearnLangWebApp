@@ -8,6 +8,7 @@ namespace LearnEnglishWebApp.Models
         [Key]
         public long Id { get; set; }
 
+        [Required]
         [MaxLength(10)]
         public string Level { get; set; }
 
@@ -15,24 +16,25 @@ namespace LearnEnglishWebApp.Models
         [MaxLength(200)]
         public string Title { get; set; }
 
-        public string Content { get; set; }
+        [MaxLength(500)]
+        public string Description { get; set; }
 
-        //[Column(TypeName = "jsonb")]
-        
-        //TODO: Написать модель для вокаб тестов и связывать с этой моделью
-        //public List<VocabQuestion> Questions { get; set; } // тест
+        [Required]
+        [MaxLength(100)]
+        public string ContentKey { get; set; } // например: "my-daily-routine"
+
+        // Слова для изучения (можно хранить список ID словарных слов)
+        [Column(TypeName = "jsonb")]
+        public List<long> VocabularyWordIds { get; set; } // ID слов из Dictionary
+
+        public int OrderIndex { get; set; }
+
+        public bool IsActive { get; set; } = true;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+
+        public ICollection<VocabTest> VocabTests { get; set; } = new List<VocabTest>();
         public ICollection<UserVocabProgress> UserProgress { get; set; } = new List<UserVocabProgress>();
-
-        public class VocabQuestion
-        {
-            public int Id { get; set; }
-            public string Question { get; set; }
-            public List<string> Options { get; set; }
-            public int CorrectAnswerIndex { get; set; }
-        }
-
     }
 }
