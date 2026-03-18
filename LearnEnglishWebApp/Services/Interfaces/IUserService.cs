@@ -11,5 +11,7 @@ namespace LearnEnglishWebApp.Services.Interfaces
         Task<AuthResponseDto> LoginAsync(LoginDto loginDto);
         Task<UserDto> UpdateLevelAsync(long userId, string newLevel);
 
+        //Task<UserDto> GetUserWithStatisticsAsync(long userId); //дл получения в будущем полного профиля со статиской
+
     }
 }

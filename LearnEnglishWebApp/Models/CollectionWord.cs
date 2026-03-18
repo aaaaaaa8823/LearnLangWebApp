@@ -9,7 +9,7 @@
 
             public long UserWordId {  get; set; }
 
-            public DateTime AddedAt { get; set; } = DateTime.UtcNow;
+            public DateTime AddedAt { get; set; }
 
             [ForeignKey("CollectionId")]
             public Collection Collection { get; set; }

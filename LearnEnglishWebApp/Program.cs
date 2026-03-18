@@ -1,4 +1,6 @@
 using LearnEnglishWebApp.Data;
+using LearnEnglishWebApp.Data.Repositories.Implementations;
+using LearnEnglishWebApp.Data.Repositories.Interfaces;
 using LearnEnglishWebApp.Services.Classes;
 using LearnEnglishWebApp.Services.Implementations;
 using LearnEnglishWebApp.Services.Interfaces;
@@ -34,7 +36,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllersWithViews();
@@ -53,13 +54,14 @@ builder.Services.AddCors(options =>
 // Подключение к PostgreSQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-dataSourceBuilder.EnableDynamicJson(); // КЛЮЧЕВАЯ СТРОКА для поддержки JSON
+dataSourceBuilder.EnableDynamicJson();
 var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(dataSource));
 
-// Регистрация сервисов
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
@@ -92,7 +94,7 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 
-//Маршрутизация для MVC
+// Маршрутизация для MVC
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -103,7 +105,7 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
 
-    AppDbContext.SeedData(dbContext); 
+    AppDbContext.SeedData(dbContext);
 }
 
 app.Run();

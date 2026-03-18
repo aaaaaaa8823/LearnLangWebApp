@@ -27,7 +27,7 @@ namespace LearnEnglishWebApp.Models
 
         //Нужно чтобы отображать видимость темы для пользователя
         public bool IsActive { get; set; } = true;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
 

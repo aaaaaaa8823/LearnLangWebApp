@@ -29,7 +29,7 @@ namespace LearnEnglishWebApp.Models
         public int TimeLimitMinutes { get; set; } = 0;
 
         public bool IsActive { get; set; } = true;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
 
         [ForeignKey("GrammarTopicId")]
         public GrammarTopic GrammarTopic { get; set; }

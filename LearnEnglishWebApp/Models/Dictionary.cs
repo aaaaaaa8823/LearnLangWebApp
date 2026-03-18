@@ -32,7 +32,7 @@ namespace LearnEnglishWebApp.Models
         //[MaxLength(255)]
         //public string PronunciationUrl { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
 
         public ICollection<UserWord> UserWords { get; set; } = new List<UserWord>();
 
