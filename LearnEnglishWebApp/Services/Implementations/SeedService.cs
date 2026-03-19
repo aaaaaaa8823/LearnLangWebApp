@@ -22,10 +22,10 @@ namespace LearnEnglishWebApp.Services.Implementations
 
             try
             {
-                // Заполняем только контентные таблицы
                 await SeedDictionaryAsync();
                 await SeedGrammarTopicsAsync();
                 await SeedVocabLessonsAsync();
+                await SeedVocabTestsAsync(); 
 
                 _logger.LogInformation("Заполнение завершено");
             }
@@ -36,7 +36,6 @@ namespace LearnEnglishWebApp.Services.Implementations
             }
         }
 
-        // 1. СЛОВАРЬ - базовые слова
         private async Task SeedDictionaryAsync()
         {
             if (await _context.Dictionaries.AnyAsync())
@@ -53,7 +52,8 @@ namespace LearnEnglishWebApp.Services.Implementations
                     Translation = "привет",
                     PartOfSpeech = "interjection",
                     DifficultyLevel = "A1",
-                    Examples = new List<string> { "Hello, how are you?" }
+                    Examples = new List<string> { "Hello, how are you?" },
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Dictionary
                 {
@@ -61,7 +61,8 @@ namespace LearnEnglishWebApp.Services.Implementations
                     Translation = "до свидания",
                     PartOfSpeech = "interjection",
                     DifficultyLevel = "A1",
-                    Examples = new List<string> { "Goodbye, see you tomorrow!" }
+                    Examples = new List<string> { "Goodbye, see you tomorrow!" },
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Dictionary
                 {
@@ -69,7 +70,8 @@ namespace LearnEnglishWebApp.Services.Implementations
                     Translation = "кот",
                     PartOfSpeech = "noun",
                     DifficultyLevel = "A1",
-                    Examples = new List<string> { "The cat is sleeping" }
+                    Examples = new List<string> { "The cat is sleeping" },
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Dictionary
                 {
@@ -77,7 +79,8 @@ namespace LearnEnglishWebApp.Services.Implementations
                     Translation = "собака",
                     PartOfSpeech = "noun",
                     DifficultyLevel = "A1",
-                    Examples = new List<string> { "The dog is barking" }
+                    Examples = new List<string> { "The dog is barking" },
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Dictionary
                 {
@@ -85,7 +88,8 @@ namespace LearnEnglishWebApp.Services.Implementations
                     Translation = "работать",
                     PartOfSpeech = "verb",
                     DifficultyLevel = "A1",
-                    Examples = new List<string> { "I work every day" }
+                    Examples = new List<string> { "I work every day" },
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Dictionary
                 {
@@ -93,11 +97,11 @@ namespace LearnEnglishWebApp.Services.Implementations
                     Translation = "учиться",
                     PartOfSpeech = "verb",
                     DifficultyLevel = "A1",
-                    Examples = new List<string> { "She studies English" }
+                    Examples = new List<string> { "She studies English" },
+                    CreatedAt = DateTime.UtcNow
                 }
             };
 
-            // Проверяем каждое слово перед добавлением
             foreach (var word in words)
             {
                 var exists = await _context.Dictionaries
@@ -113,7 +117,6 @@ namespace LearnEnglishWebApp.Services.Implementations
             _logger.LogInformation($"Добавлено слов в словарь");
         }
 
-        // 2. ГРАММАТИКА - темы
         private async Task SeedGrammarTopicsAsync()
         {
             if (await _context.GrammarTopics.AnyAsync())
@@ -129,25 +132,27 @@ namespace LearnEnglishWebApp.Services.Implementations
                     Level = "A1",
                     Title = "Present Simple",
                     Description = "Настоящее простое время",
-                    OrderIndex = 1
+                    OrderIndex = 1,
+                    CreatedAt = DateTime.UtcNow
                 },
                 new GrammarTopic
                 {
                     Level = "A1",
                     Title = "Past Simple",
                     Description = "Прошедшее простое время",
-                    OrderIndex = 2
+                    OrderIndex = 2,
+                    CreatedAt = DateTime.UtcNow
                 },
                 new GrammarTopic
                 {
                     Level = "A1",
                     Title = "Future Simple",
                     Description = "Будущее простое время",
-                    OrderIndex = 3
+                    OrderIndex = 3,
+                    CreatedAt = DateTime.UtcNow
                 }
             };
 
-            // Проверяем каждую тему перед добавлением
             foreach (var topic in topics)
             {
                 var exists = await _context.GrammarTopics
@@ -162,7 +167,6 @@ namespace LearnEnglishWebApp.Services.Implementations
             await _context.SaveChangesAsync();
             _logger.LogInformation($"Добавлено грамматических тем");
 
-            // Добавляем тесты к темам
             await SeedGrammarTestsAsync();
         }
 
@@ -171,7 +175,7 @@ namespace LearnEnglishWebApp.Services.Implementations
         {
             if (await _context.GrammarTests.AnyAsync())
             {
-                _logger.LogInformation("Тесты уже заполнены");
+                _logger.LogInformation("Грамматические тесты уже заполнены");
                 return;
             }
 
@@ -190,11 +194,11 @@ namespace LearnEnglishWebApp.Services.Implementations
                         QuestionCount = 5,
                         PassingScore = 60,
                         TimeLimitMinutes = 10,
-                        OrderIndex = 1
+                        OrderIndex = 1,
+                        CreatedAt = DateTime.UtcNow
                     }
                 };
 
-                // Проверяем каждый тест перед добавлением
                 foreach (var test in tests)
                 {
                     var exists = await _context.GrammarTests
@@ -207,11 +211,10 @@ namespace LearnEnglishWebApp.Services.Implementations
                 }
 
                 await _context.SaveChangesAsync();
-                _logger.LogInformation($"Добавлено тестов");
+                _logger.LogInformation($"Добавлено грамматических тестов");
             }
         }
 
-        // 4. VOCAB УРОКИ
         private async Task SeedVocabLessonsAsync()
         {
             if (await _context.VocabLessons.AnyAsync())
@@ -227,18 +230,21 @@ namespace LearnEnglishWebApp.Services.Implementations
                     Level = "A1",
                     Title = "My Daily Routine",
                     Description = "Мой день - учим слова о повседневных делах",
-                    OrderIndex = 1
+                    OrderIndex = 1,
+                    CreatedAt = DateTime.UtcNow,
+                    IsActive = true
                 },
                 new VocabLesson
                 {
                     Level = "A1",
                     Title = "My Family",
                     Description = "Моя семья - учим слова о семье",
-                    OrderIndex = 2
+                    OrderIndex = 2,
+                    CreatedAt = DateTime.UtcNow,
+                    IsActive = true
                 }
             };
 
-            // Проверяем каждый урок перед добавлением
             foreach (var lesson in lessons)
             {
                 var exists = await _context.VocabLessons
@@ -251,7 +257,104 @@ namespace LearnEnglishWebApp.Services.Implementations
             }
 
             await _context.SaveChangesAsync();
-            _logger.LogInformation($"Добавлено уроков");
+            _logger.LogInformation($"Добавлено {lessons.Count} Vocab уроков");
+        }
+
+        private async Task SeedVocabTestsAsync()
+        {
+            if (await _context.VocabTests.AnyAsync())
+            {
+                _logger.LogInformation("Vocab тесты уже заполнены");
+                return;
+            }
+
+            var dailyRoutine = await _context.VocabLessons
+                .FirstOrDefaultAsync(l => l.Title == "My Daily Routine");
+
+            var myFamily = await _context.VocabLessons
+                .FirstOrDefaultAsync(l => l.Title == "My Family");
+
+            var tests = new List<VocabTest>();
+
+            if (dailyRoutine != null)
+            {
+                tests.Add(new VocabTest
+                {
+                    VocabLessonId = dailyRoutine.Id,
+                    Title = "Daily Routine - Comprehension",
+                    Level = "A1",
+                    Description = "Проверьте понимание текста о повседневных делах",
+                    TestType = "comprehension",
+                    QuestionCount = 5,
+                    PassingScore = 60,
+                    TimeLimitMinutes = 10,
+                    OrderIndex = 1,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                });
+
+                tests.Add(new VocabTest
+                {
+                    VocabLessonId = dailyRoutine.Id,
+                    Title = "Daily Routine - Vocabulary",
+                    Level = "A1",
+                    Description = "Проверьте знание слов из урока",
+                    TestType = "vocabulary",
+                    QuestionCount = 8,
+                    PassingScore = 70,
+                    TimeLimitMinutes = 15,
+                    OrderIndex = 2,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+
+            if (myFamily != null)
+            {
+                tests.Add(new VocabTest
+                {
+                    VocabLessonId = myFamily.Id,
+                    Title = "Family - Comprehension",
+                    Level = "A1",
+                    Description = "Проверьте понимание текста о семье",
+                    TestType = "comprehension",
+                    QuestionCount = 5,
+                    PassingScore = 60,
+                    TimeLimitMinutes = 10,
+                    OrderIndex = 1,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                });
+
+                tests.Add(new VocabTest
+                {
+                    VocabLessonId = myFamily.Id,
+                    Title = "Family - Vocabulary",
+                    Level = "A1",
+                    Description = "Проверьте знание слов о семье",
+                    TestType = "vocabulary",
+                    QuestionCount = 8,
+                    PassingScore = 70,
+                    TimeLimitMinutes = 15,
+                    OrderIndex = 2,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+
+            foreach (var test in tests)
+            {
+                var exists = await _context.VocabTests
+                    .AnyAsync(t => t.Title == test.Title && t.VocabLessonId == test.VocabLessonId);
+
+                if (!exists)
+                {
+                    await _context.VocabTests.AddAsync(test);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation($"Добавлено {tests.Count} Vocab тестов");
         }
     }
 }

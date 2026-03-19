@@ -1,5 +1,4 @@
-﻿// УНИКАЛЬНОЕ имя переменной - точно не будет конфликтов
-const APP_API_URL = '/api';
+﻿const APP_API_URL = '/api';
 console.log('APP_API_URL:', APP_API_URL);
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -35,7 +34,6 @@ function switchTab(tab) {
     });
 }
 
-// Проверка токена
 function isTokenExpired(token) {
     try {
         const payload = JSON.parse(atob(token.split('.')[1]));
@@ -46,7 +44,6 @@ function isTokenExpired(token) {
     }
 }
 
-// Функция для запросов с авторизацией
 async function fetchWithAuth(url, options = {}) {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -54,7 +51,7 @@ async function fetchWithAuth(url, options = {}) {
         throw new Error('Нет токена авторизации');
     }
     if (isTokenExpired(token)) {
-        logout(); // Используем функцию logout для выхода
+        logout(); 
         throw new Error('Токен истек');
     }
     const headers = {
@@ -64,13 +61,12 @@ async function fetchWithAuth(url, options = {}) {
     };
     const response = await fetch(url, { ...options, headers });
     if (response.status === 401) {
-        logout(); // Используем функцию logout для выхода
+        logout();
         throw new Error('Не авторизован');
     }
     return response;
 }
 
-// Функция регистрации
 async function register() {
     const username = document.getElementById('register-username').value.trim();
     const email = document.getElementById('register-email').value.trim();
@@ -129,16 +125,13 @@ async function register() {
 
         console.log('Регистрация успешна!');
 
-        // Очищаем поля
         document.getElementById('register-username').value = '';
         document.getElementById('register-email').value = '';
         document.getElementById('register-password').value = '';
         document.getElementById('register-confirm').value = '';
 
-        // Переключаем на вкладку логина
         switchTab('login');
 
-        // Показываем сообщение об успехе
         const loginErrorDiv = document.getElementById('login-error');
         if (loginErrorDiv) {
             loginErrorDiv.textContent = 'Регистрация успешна! Теперь войдите в аккаунт.';
@@ -151,7 +144,6 @@ async function register() {
     }
 }
 
-// Функция входа
 async function login() {
     const email = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
@@ -190,25 +182,23 @@ async function login() {
             throw new Error('Неверный формат ответа от сервера');
         }
 
-        console.log('✅ Успешный вход!');
+        console.log('Успешный вход!');
 
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        // Редирект на профиль
+
         window.location.href = '/Home/Me';
 
     } catch (error) {
-        console.error('❌ Ошибка входа:', error);
+        console.error('Ошибка входа:', error);
         errorDiv.textContent = error.message;
     }
 }
 
-// Функция выхода - доступна глобально
 window.logout = function () {
     console.log('Выход из системы...');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    // Редирект на главную страницу
     window.location.href = '/';
 }
