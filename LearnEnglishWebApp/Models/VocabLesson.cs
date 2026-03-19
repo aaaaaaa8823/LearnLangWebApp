@@ -19,19 +19,11 @@ namespace LearnEnglishWebApp.Models
         [MaxLength(500)]
         public string Description { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        public string ContentKey { get; set; } // например: "my-daily-routine"
-
-        // Слова для изучения (можно хранить список ID словарных слов)
-        [Column(TypeName = "jsonb")]
-        public List<long> VocabularyWordIds { get; set; } // ID слов из Dictionary
-
         public int OrderIndex { get; set; }
 
         public bool IsActive { get; set; } = true;
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 
         public ICollection<VocabTest> VocabTests { get; set; } = new List<VocabTest>();

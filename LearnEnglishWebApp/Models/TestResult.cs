@@ -24,18 +24,10 @@ namespace LearnEnglishWebApp.Models
         public int TimeSpentSeconds { get; set; }
         public int CorrectAnswers { get; set; }
         public int WrongAnswers { get; set; }
-
-        // Детальные результаты (опционально)
-        [Column(TypeName = "jsonb")]
-        public List<TestAnswerDetail> AnswerDetails { get; set; }
-
         public DateTime CompletedAt { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("UserId")]
         public User User { get; set; }
-
-        // НЕТ прямых связей с GrammarTest или VocabTest
-        // Они будут определяться по TestType + TestId на уровне приложения
     }
 
     public class TestAnswerDetail

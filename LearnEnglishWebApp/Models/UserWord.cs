@@ -14,11 +14,7 @@ namespace LearnEnglishWebApp.Models
         [MaxLength(20)]
         public string Status { get; set; } = "learning";
 
-        public DateTime AddedAt { get; set; }
-
-        //это колличество повторений для одного слова. Логика как в флеш картах. На будущее.
-        //public DateTime? LastReviewed { get; set; }
-        //public int ReviewCount { get; set; } = 0;
+        public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 
         public string ContextSentence { get; set; }
 

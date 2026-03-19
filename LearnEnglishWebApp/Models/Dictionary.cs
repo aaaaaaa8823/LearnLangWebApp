@@ -28,11 +28,7 @@ namespace LearnEnglishWebApp.Models
         [Column(TypeName = "jsonb")]
         public List<string> Examples { get; set; }
 
-        //не уверена буду ли вставлять ссылки на произношение для каждого слова. Пока сложно но оставлю на будущее
-        //[MaxLength(255)]
-        //public string PronunciationUrl { get; set; }
-
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<UserWord> UserWords { get; set; } = new List<UserWord>();
 

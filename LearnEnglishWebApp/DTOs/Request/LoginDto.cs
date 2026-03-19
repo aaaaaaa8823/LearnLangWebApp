@@ -5,7 +5,7 @@ namespace LearnEnglishWebApp.DTOs.Request
     public class LoginDto
     {
         [Required]
-        [EmailAddress]
+        //[EmailAddress]
         public string Email { get; set; }
 
         [Required]

@@ -6,11 +6,17 @@ using LearnEnglishWebApp.Services.Implementations;
 using LearnEnglishWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Npgsql;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Добавьте в начало Program.cs после builder
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 // Настройка JWT
 builder.Services.Configure<JWTSettings>(
@@ -64,6 +70,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddScoped<ISeedService, SeedService>();
+
 var app = builder.Build();
 
 app.UseStaticFiles(new StaticFileOptions
@@ -102,10 +110,26 @@ app.MapControllerRoute(
 // Инициализация тестовых данных
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    dbContext.Database.Migrate();
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
 
-    AppDbContext.SeedData(dbContext);
+    try
+    {
+        logger.LogInformation("Применяем миграции...");
+        var context = services.GetRequiredService<AppDbContext>();
+        await context.Database.MigrateAsync();
+
+        logger.LogInformation("Заполняем тестовыми данными...");
+
+        var seedService = services.GetRequiredService<ISeedService>();
+        await seedService.SeedAllDataAsync();
+
+        logger.LogInformation("Готово!");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Ошибка при инициализации БД");
+    }
 }
 
 app.Run();

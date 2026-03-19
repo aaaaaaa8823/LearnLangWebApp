@@ -24,7 +24,7 @@ namespace LearnEnglishWebApp.Models
         [MaxLength(10)]
         public string Level { get; set; } = "A1";
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<UserWord> UserWords { get; set; } = new List<UserWord>();
         public ICollection<Collection> Collections { get; set; } = new List<Collection>();

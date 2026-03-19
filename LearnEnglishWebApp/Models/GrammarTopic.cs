@@ -19,17 +19,9 @@ namespace LearnEnglishWebApp.Models
         [MaxLength(500)]
         public string Description { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        public string ContentKey { get; set; } // например: "present-simple-theory"
-
         public int OrderIndex { get; set; }
 
-        //Нужно чтобы отображать видимость темы для пользователя
-        public bool IsActive { get; set; } = true;
-        public DateTime CreatedAt { get; set; }
-
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<GrammarTest> GrammarTests { get; set; } = new List<GrammarTest>();
         public ICollection<UserGrammarProgress> UserGrammarProgresses { get; set; } = new List<UserGrammarProgress>();

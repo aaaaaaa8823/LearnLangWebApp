@@ -22,10 +22,6 @@ namespace LearnEnglishWebApp.Models
         [MaxLength(500)]
         public string Description { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        public string TestKey { get; set; } // например: "my-daily-routine-test-1"
-
         // Тип теста
         [MaxLength(20)]
         public string TestType { get; set; } = "comprehension"; 
@@ -40,7 +36,7 @@ namespace LearnEnglishWebApp.Models
 
         public bool IsActive { get; set; } = true;
 
-        public DateTime CreatedAt { get; set; } 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("VocabLessonId")]
         public VocabLesson VocabLesson { get; set; }

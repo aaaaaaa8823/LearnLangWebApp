@@ -18,7 +18,7 @@ namespace LearnEnglishWebApp.Models
 
         public bool IsDefault { get; set; } = false;
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("UserId")]
         public User User { get; set; }

@@ -4,14 +4,51 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - LearnEnglish</title>
+    <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/main.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
-
+    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
 </head>
 <body>
-    <main>
-        @RenderBody()
-    </main>
+    @if (ViewBag.ShowSidebar == true)
+    {
+        <aside class="profile-sidebar">
+            <div class="sidebar-header">
+                <div class="user-avatar">
+                    <span id="userInitials">U</span>
+                </div>
+                <h3 id="userName">Загрузка...</h3>
+                <span class="user-level" id="userLevel">A1</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/Home/Me" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Me" ? "active" : "")">
+                    Словарь
+                </a>
+                <a href="/Home/Tests" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Tests" ? "active" : "")">
+                    Тесты
+                </a>
+                <a href="/Home/Lessons" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Lessons" ? "active" : "")">
+                    Уроки
+                </a>
+                <a href="/Home/Account" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Account" ? "active" : "")">
+                    Настройки аккаунта
+                </a>
+            </nav>
+
+            <button class="logout-btn" onclick="logout()">Выйти</button>
+        </aside>
+
+        <main class="main-with-sidebar">
+            @RenderBody()
+        </main>
+    }
+    else
+    {
+        <main class="main-full">
+            @RenderBody()
+        </main>
+    }
 
     <footer class="footer">
         <div class="footer-content">
@@ -19,7 +56,7 @@
         </div>
     </footer>
 
-    <script src="~/js/auth.js" asp-append-version="true"></script>
+    <script src="~/js/auth-new.js" asp-append-version="true"></script>
     <script src="~/js/profile.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
