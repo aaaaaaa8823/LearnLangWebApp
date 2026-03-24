@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using LearnEnglishWebApp.Services.Interfaces;
 using LearnEnglishWebApp.DTOs.Request;
-using Microsoft.Extensions.Logging; // 👈 Добавить using
+using Microsoft.Extensions.Logging; 
 
 namespace LearnEnglishWebApp.Controllers
 {
@@ -10,16 +10,16 @@ namespace LearnEnglishWebApp.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly ILogger<AuthController> _logger; // 👈 Добавить поле
+        private readonly ILogger<AuthController> _logger; 
 
-        public AuthController(IUserService userService, ILogger<AuthController> logger) // 👈 Добавить параметр
+        public AuthController(IUserService userService, ILogger<AuthController> logger) 
         {
             _userService = userService;
-            _logger = logger; // 👈 Сохранить
+            _logger = logger;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto) // 👈 Добавить [FromBody]
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto) 
         {
             try
             {
@@ -52,20 +52,18 @@ namespace LearnEnglishWebApp.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto) // 👈 Добавить [FromBody]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto) 
         {
             try
             {
                 _logger.LogInformation($"Login attempt for email: {loginDto?.Email}");
 
-                // 👇 ВАЖНО: Проверка на null
                 if (loginDto == null)
                 {
                     _logger.LogWarning("LoginDto is null");
                     return BadRequest(new { message = "Данные не получены. Убедитесь, что отправляете JSON с полями email и password" });
                 }
 
-                // 👇 Проверка полей
                 if (string.IsNullOrEmpty(loginDto.Email))
                 {
                     _logger.LogWarning("Email is empty");

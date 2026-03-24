@@ -3,10 +3,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="tests-page">
-    <h1>Аккаунт</h1>
-
-    <div class="tests-grid" id="testsContainer">
-        <div class="loading">Загрузка аккаунта...</div>
+<div class="account-page">
+    <div id="profileContainer" class="profile-content">
+        <div class="loading">Загрузка данных...</div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', loadAccountPage);
+    </script>
+}

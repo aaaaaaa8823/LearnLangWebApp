@@ -19,11 +19,9 @@ namespace LearnEnglishWebApp.Data
         public DbSet<VocabLesson> VocabLessons { get; set; }
         public DbSet<UserVocabProgress> UserVocabProgresses { get; set; }
 
-        // Новые DbSet для тестов (без JSON)
         public DbSet<GrammarTest> GrammarTests { get; set; }
         public DbSet<VocabTest> VocabTests { get; set; }
 
-        // УНИВЕРСАЛЬНАЯ таблица для результатов тестов
         public DbSet<TestResult> TestResults { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,7 +31,6 @@ namespace LearnEnglishWebApp.Data
             modelBuilder.Entity<UserGrammarProgress>().HasKey(ugp => new { ugp.UserId, ugp.GrammarTopicId });
             modelBuilder.Entity<UserVocabProgress>().HasKey(uvp => new { uvp.UserId, uvp.LessonId });
 
-            // Новый составной ключ для TestResult (уникальность попытки)
             modelBuilder.Entity<TestResult>()
                 .HasKey(tr => new { tr.UserId, tr.TestType, tr.TestId, tr.AttemptNumber });
 

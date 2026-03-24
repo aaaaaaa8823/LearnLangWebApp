@@ -6,7 +6,6 @@ using LearnEnglishWebApp.Services.Implementations;
 using LearnEnglishWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using System.Text;

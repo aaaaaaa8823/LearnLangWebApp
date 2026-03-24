@@ -52,12 +52,25 @@
 
     <footer class="footer">
         <div class="footer-content">
-            &copy; 2026 LearnEnglish — Изучай английский с удовольствием
+            &copy; 2026 LearnLang — Изучай иностранные языки с удовольствием
         </div>
     </footer>
 
-    <script src="~/js/auth-new.js" asp-append-version="true"></script>
-    <script src="~/js/profile.js" asp-append-version="true"></script>
+    <script src="~/js/show-data-user.js" asp-append-version="true"></script>
+
+    @if (ViewBag.ShowSidebar == true)
+    {
+        <script>
+            // Загружаем данные пользователя при загрузке
+            document.addEventListener('DOMContentLoaded', loadSidebarUser);
+        </script>
+    }
+
+    @if (ViewBag.ShowSidebar != true)
+    {
+        <script src="~/js/auth-new.js" asp-append-version="true"></script>
+    }
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -60,18 +60,6 @@ namespace LearnEnglishWebApp.Services.Implementations
                 throw;
             }
         }
-        //var user = await _context.Users.FindAsync(id);
-
-        //if (user == null) return null;
-
-        //return new UserDto
-        //{
-        //    Id = user.Id,
-        //    UserName = user.UserName,
-        //    Email = user.Email,
-        //    Level = user.Level,
-        //    CreatedAt = user.CreatedAt
-        //};
 
         public async Task<UserDto> GetUserByEmailAsync(string email)
         {
@@ -90,19 +78,6 @@ namespace LearnEnglishWebApp.Services.Implementations
                 throw;
             }
         }
-        //    var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-
-        //    if (user == null) return null;
-
-        //    return new UserDto
-        //    {
-        //        Id = user.Id,
-        //        UserName = user.UserName,
-        //        Email = user.Email,
-        //        Level = user.Level,
-        //        CreatedAt = user.CreatedAt
-        //    };
-        //}
 
         public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
         {
@@ -155,36 +130,6 @@ namespace LearnEnglishWebApp.Services.Implementations
                 _logger.LogError(ex, "Ошибка при регистрации пользователя: {Email}", registerDto.Email);
                 throw;
             }
-            //var existingUser = await _context.Users
-            //    .FirstOrDefaultAsync(u => u.Email == registerDto.Email);
-
-            //if (existingUser != null)
-            //    throw new Exception("Пользователь уже существует");
-
-            //var passwordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
-
-            //var user = new User
-            //{
-            //    UserName = registerDto.UserName,
-            //    Email = registerDto.Email,
-            //    PasswordHash = passwordHash,
-            //    Level = "A1",
-            //    CreatedAt = DateTime.UtcNow
-            //};
-
-            //_context.Users.Add(user);
-            //await _context.SaveChangesAsync();
-
-            //await CreateDefaultCollectionsAsync(user.Id);
-
-            //return new UserDto
-            //{
-            //    Id = user.Id,
-            //    UserName = user.UserName,
-            //    Email = user.Email,
-            //    Level = user.Level,
-            //    CreatedAt = user.CreatedAt
-            //};
         }
 
         private async Task CreateDefaultCollectionsAsync(long userId)
@@ -239,33 +184,6 @@ namespace LearnEnglishWebApp.Services.Implementations
                 _logger.LogError(ex, "Ошибка при входе пользователя: {Email}", loginDto.Email);
                 throw;
             }
-            //var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
-
-            //if (user == null) 
-            //    throw new Exception("Пользователь не найден");
-
-            //bool isValidPassword = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
-
-            //if (!isValidPassword)
-            //    throw new Exception("Неверный пароль");
-
-            ////генерировать JWT токен
-            //var token = GenerateJWTToken(user);
-
-            //return new AuthResponseDto
-            //{
-            //    Token = token,
-            //    User = new UserDto
-            //    {
-            //        Id = user.Id,
-            //        UserName = user.UserName,
-            //        Email = user.Email,
-            //        Level = user.Level,
-            //        CreatedAt = user.CreatedAt
-            //    },
-            //    ResponseLenght = DateTime.UtcNow.AddHours(_jwtSettings.ExpirationHours)
-
-            //};
         }
 
         private string GenerateJWTToken(User user)
@@ -325,6 +243,103 @@ namespace LearnEnglishWebApp.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка при обновлении уровня пользователя: {UserId}", userId);
+                throw;
+            }
+        }
+
+        public async Task<UserDto> UpdateProfileAsync(long userId, UpdateProfileDto updateDto)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                    throw new InvalidOperationException("Пользователь не найден");
+
+                if (user.Email != updateDto.Email)
+                {
+                    var existingUser = await _userRepository.GetByEmailAsync(updateDto.Email);
+                    if (existingUser != null)
+                        throw new InvalidOperationException("Пользователь с таким email уже существует");
+                }
+
+                // Проверяем уникальность имени (если меняется)
+                if (user.UserName != updateDto.UserName)
+                {
+                    var existingUsername = await _userRepository.GetByUsernameAsync(updateDto.UserName);
+                    if (existingUsername != null)
+                        throw new InvalidOperationException("Пользователь с таким именем уже существует");
+                }
+
+                user.UserName = updateDto.UserName; 
+                user.Email = updateDto.Email;
+
+                if (!string.IsNullOrEmpty(updateDto.Level))
+                {
+                    var validLevels = new[] { "A1", "A2", "B1", "B2", "C1", "C2" };
+                    if (!validLevels.Contains(updateDto.Level))
+                        throw new ArgumentException("Недопустимый уровень");
+                    user.Level = updateDto.Level;
+                }
+
+                if (!string.IsNullOrEmpty(updateDto.NewPassword)) {
+                    if (string.IsNullOrEmpty(updateDto.CurrentPassword))
+                        throw new UnauthorizedAccessException("Для смены пароля введите текущий пароль");
+
+                    bool isValidPassword = BCrypt.Net.BCrypt.Verify(updateDto.CurrentPassword, user.PasswordHash);
+                    if (!isValidPassword)
+                        throw new UnauthorizedAccessException("Неверный текущий пароль");
+
+                    // Хешируем новый пароль
+                    user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(updateDto.NewPassword);
+                }
+
+                _userRepository.Update(user);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Профиль пользователя обновлен: {UserId}", userId);
+                return MapToDto(user);
+            }
+            catch (Exception ex) {
+                _logger.LogError(ex, "Ошибка при обновлении профиля пользователя: {UserId}", userId);
+                throw;
+            }
+        }
+
+        public async Task<UserStatsDto> GetUserStatsAsync(long userId)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                    throw new InvalidOperationException("Пользователь не найден");
+
+                var learningWords = await _context.UsersWords
+                     .CountAsync(uw => uw.UserId == userId && uw.Status == "learning");
+
+                var learnedWords = await _context.UsersWords
+                   .CountAsync(uw => uw.UserId == userId && uw.Status == "learned");
+
+                var completedTests = await _context.TestResults
+                   .CountAsync(tr => tr.UserId == userId);
+
+                var completedLessons = await _context.UserGrammarProgress
+                    .CountAsync(ugp => ugp.UserId == userId && ugp.Completed);
+
+                var completedVocab = await _context.UserVocabProgresses
+                    .CountAsync(uvp => uvp.UserId == userId && uvp.Completed);
+
+                return new UserStatsDto
+                {
+                    LearningWords = learningWords,
+                    LearnedWords = learnedWords,
+                    CompletedTests = completedTests,
+                    CompletedLessons = completedLessons + completedVocab,
+                    MemberSince = user.CreatedAt
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при получении статистики пользователя: {UserId}", userId);
                 throw;
             }
         }
