@@ -1,4 +1,11 @@
-﻿function escapeHtml(text) {
+﻿function logout() {
+    console.log('Выход из системы...');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/';
+}
+
+function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;

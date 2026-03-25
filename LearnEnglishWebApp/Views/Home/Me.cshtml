@@ -3,40 +3,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="dictionary-page">
-    <h1>Мой словарь</h1>
-
-    <!--Пока оставлю эти две коллеции слов. Потом можно будет вынести из на отдельную страницу либо в сайдбар-->
-    <div class="stats-row">
-        <div class="stat-box">
-            <span class="stat-label">В процессе</span>
-            <span class="stat-number" id="learningWords">0</span>
-        </div>
-        <div class="stat-box">
-            <span class="stat-label">Выучено</span>
-            <span class="stat-number" id="learnedWords">0</span>
-        </div>
-    </div>
-
-    <div class="search-wrapper">
-        <input type="text"
-               class="search-input"
-               id="wordSearch"
-               placeholder="Поиск слова..."
-               aria-label="Поиск по словарю" />
-    </div>
-
-    <div class="words-list" id="wordsList">
-        <div class="loading">Загрузка слов...</div>
-    </div>
-</div>
-
-<!-- Вкладка аккаунта пока оставим так, но потом тоже вынесу в отдельную страницу -->
-<div class="tab-content" id="account-tab" style="display: none;">
-    <h2>Настройки аккаунта</h2>
-    <div class="account-info">
-        <p><strong>Email:</strong> <span id="userEmail">-</span></p>
-        <p><strong>Уровень:</strong> <span id="userLevelDisplay">A1</span></p>
-        <p><strong>Дата регистрации:</strong> <span id="userJoinDate">-</span></p>
+<div class="welcome-page">
+    <div class="welcome-container">
+        <h1 class="welcome-title">Рады видеть вас снова!</h1>
     </div>
 </div>
