@@ -109,7 +109,7 @@ namespace LearnEnglishWebApp.Data
         //{
         //    if (!context.GrammarTopics.Any())
         //    {
-        //        context.GrammarTopics.AddRange(
+        //        context.GrammarTopics.AddRange(   
         //            new GrammarTopic
         //            {
         //                Level = "A1",
