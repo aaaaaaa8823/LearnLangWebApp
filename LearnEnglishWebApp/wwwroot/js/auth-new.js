@@ -166,7 +166,7 @@ async function login() {
     }
 
     try {
-        console.log('=== LOGIN ATTEMPT ===');
+
         console.log('Email:', `"${email}"`);
 
         const response = await fetch(`${APP_API_URL}/Auth/login`, {
