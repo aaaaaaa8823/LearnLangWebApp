@@ -64,11 +64,17 @@ var dataSource = dataSourceBuilder.Build();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(dataSource));
 
+//тут регать сервисы и репозитории
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<IDictionaryRepository, DictionaryRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<ISeedService, SeedService>();
+
+builder.Services.AddScoped<IDictionaryService, DictionaryService>();
 
 var app = builder.Build();
 
