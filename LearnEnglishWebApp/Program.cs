@@ -76,6 +76,11 @@ builder.Services.AddScoped<ISeedService, SeedService>();
 
 builder.Services.AddScoped<IDictionaryService, DictionaryService>();
 
+builder.Services.AddScoped<IUserWordsRepository, UserWordsRepository>();
+
+builder.Services.AddScoped<IDictionaryRepository, DictionaryRepository>();
+
+builder.Services.AddScoped<IUserWordsService, UserWordsService>();
 var app = builder.Build();
 
 app.UseStaticFiles(new StaticFileOptions

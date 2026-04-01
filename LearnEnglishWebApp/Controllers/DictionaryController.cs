@@ -7,6 +7,7 @@ namespace LearnEnglishWebApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class DictionaryController: ControllerBase
     {
         private readonly IDictionaryService _dictionary;
