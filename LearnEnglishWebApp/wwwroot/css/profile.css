@@ -1,7 +1,4 @@
-﻿/* profile.css - стили для страницы аккаунта и общих элементов */
-
-/* Основной контейнер с сайдбаром */
-.main-with-sidebar {
+﻿.main-with-sidebar {
     margin-left: 250px;
     min-height: 100vh;
     background: #f8fafd;
@@ -9,7 +6,6 @@
     box-sizing: border-box;
 }
 
-/* Страницы с контентом */
 .tests-page,
 .lessons-page,
 .profile-content {
@@ -20,15 +16,14 @@
     box-sizing: border-box;
 }
 
-    /* Заголовки страниц */
-    .tests-page h1,
-    .lessons-page h1,
-    .profile-content h1 {
-        color: #1a3b5d;
-        margin-bottom: 30px;
-        font-size: 2rem;
-        font-weight: 500;
-    }
+.tests-page h1,
+.lessons-page h1,
+.profile-content h1 {
+    color: #1a3b5d;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    font-weight: 500;
+}
 
 /* Списки тестов и уроков */
 .tests-list,
