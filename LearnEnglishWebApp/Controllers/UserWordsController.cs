@@ -62,5 +62,49 @@ namespace LearnEnglishWebApp.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPut("update-status")]
+        public async Task<IActionResult> UpdateWordsStatus([FromBody] UpdateWordStatusDto dto)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (userIdClaim == null || !long.TryParse(userIdClaim, out long userId))
+                    return Unauthorized();
+
+                if (userId != dto.UserId)
+                    return Unauthorized();
+
+                var result = await _userWordService.UpdateWordStatusAsync(dto.UserId, dto.WordId, dto.Status);
+                return Ok(result);
+            }
+            catch (Exception ex) {
+                return BadRequest(new { message = ex.Message });
+            }
+
+        }
+
+        [HttpDelete("remove")]
+        public async Task<IActionResult> RemoveWord([FromBody] RemoveUserWordDto dto)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null || !long.TryParse(userIdClaim, out long userId))
+                    return Unauthorized();
+
+                if (userId != dto.UserId)
+                    return Unauthorized();
+
+                var result = await _userWordService.RemoveWordFromUserAsync(dto.UserId, dto.WordId);
+                return Ok(new { success = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+
+        }
     }
 }

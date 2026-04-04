@@ -1,6 +1,7 @@
 ﻿let allWords = [];
 let learningWords = 0;
 let learnedWords = 0;
+let currentModalStatus = null
 
 async function loadUserWordStats() {
     try {
@@ -30,6 +31,62 @@ async function loadUserWordStats() {
     }
 }
 
+async function showWordsModal(status) {
+    currentModalStatus = status;
+    const modal = document.getElementById('wordsModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+
+    if (status === 'learning') {
+        modalTitle.textContent = 'Слова в процессе изучения';
+    } else {
+        modalTitle.textContent = 'Выученные слова';
+    }
+
+    modal.style.display = 'block';
+    modalBody.innerHTML = '<div class="loading-modal">Загрузка...</div>';
+
+    // Загружаем слова
+    await loadUserWordsByStatus(status);
+}
+
+function closeModal() {
+    const modal = document.getElementById('wordsModal');
+    modal.style.display = 'none';
+    currentModalStatus = null;
+}
+
+window.onclick = function (event) {
+    const modal = document.getElementById('wordsModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+}
+
+async function loadUserWordsByStatus(status) {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/';
+            return;
+        }
+
+        const response = await fetch(`/api/UserWords/my-words?status=${status}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) throw new Error('Ошибка загрузки слов');
+
+        const words = await response.json();
+        displayUserWords(words, status);
+
+    } catch (error) {
+        console.error('Ошибка:', error);
+        const modalBody = document.getElementById('modalBody');
+        modalBody.innerHTML = '<div class="error">Ошибка загрузки слов</div>';
+    }
+}
+
 async function loadDictionaryWords() {
     const container = document.getElementById('wordsList');
     if (!container) return;
@@ -53,6 +110,178 @@ async function loadDictionaryWords() {
     } catch (error) {
         console.error('Ошибка:', error);
         container.innerHTML = '<div class="error">Ошибка загрузки слов</div>';
+    }
+}
+
+function displayUserWords(words, status) {
+    const modalBody = document.getElementById('modalBody');
+
+    if (!words || words.length === 0) {
+        modalBody.innerHTML = '<div class="empty-modal">Нет слов</div>';
+        return;
+    }
+
+    modalBody.innerHTML = `
+        <div class="modal-word-list">
+            ${words.map(word => `
+                <div class="modal-word-item" data-word-id="${word.wordId}">
+                    <div class="modal-word-info">
+                        <span class="modal-word-text">${escapeHtml(word.word)}</span>
+                        <span class="modal-word-translation">${escapeHtml(word.translations || word.translation || '')}</span>
+                        <span class="modal-word-status ${status === 'learning' ? 'status-learning-badge' : 'status-learned-badge'}">
+                            ${status === 'learning' ? 'В процессе' : 'Выучено'}
+                        </span>
+                    </div>
+                    <div class="modal-word-actions">
+                        ${status === 'learning' ? `
+                            <button class="btn-modal btn-learned" onclick="markAsLearned(${word.wordId}, '${escapeHtml(word.word)}')">
+                                Выучено
+                            </button>
+                        ` : `
+                            <button class="btn-modal btn-learning" onclick="markAsLearning(${word.wordId}, '${escapeHtml(word.word)}')">
+                                Повторить
+                            </button>
+                        `}
+                        <button class="btn-modal btn-delete" onclick="removeWord(${word.wordId}, '${escapeHtml(word.word)}')">
+                            Удалить
+                        </button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+async function markAsLearned(wordId, wordText) {
+    try {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        const response = await fetch(`/api/UserWords/update-status`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: user.id,
+                wordId: wordId,
+                status: 'learned'
+            })
+        });
+
+        if (!response.ok) throw new Error('Ошибка обновления статуса');
+
+        // Обновляем статистику
+        learningWords--;
+        learnedWords++;
+
+        const learningElement = document.getElementById('learningWords');
+        const learnedElement = document.getElementById('learnedWords');
+
+        if (learningElement) learningElement.textContent = learningWords;
+        if (learnedElement) learnedElement.textContent = learnedWords;
+
+        alert(`Слово "${wordText}" отмечено как выученное!`);
+
+        // Обновляем модальное окно
+        if (currentModalStatus === 'learning') {
+            await loadUserWordsByStatus('learning');
+        }
+
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert(error.message);
+    }
+}
+
+async function markAsLearning(wordId, wordText) {
+    try {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        const response = await fetch(`/api/UserWords/update-status`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: user.id,
+                wordId: wordId,
+                status: 'learning'
+            })
+        });
+
+        if (!response.ok) throw new Error('Ошибка обновления статуса');
+
+        // Обновляем статистику
+        learningWords++;
+        learnedWords--;
+
+        const learningElement = document.getElementById('learningWords');
+        const learnedElement = document.getElementById('learnedWords');
+
+        if (learningElement) learningElement.textContent = learningWords;
+        if (learnedElement) learnedElement.textContent = learnedWords;
+
+        alert(`Слово "${wordText}" возвращено в процесс изучения!`);
+
+        // Обновляем модальное окно
+        if (currentModalStatus === 'learned') {
+            await loadUserWordsByStatus('learned');
+        }
+
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert(error.message);
+    }
+}
+
+async function removeWord(wordId, wordText) {
+    if (!confirm(`Вы уверены, что хотите удалить слово "${wordText}" из вашего словаря?`)) {
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        const response = await fetch(`/api/UserWords/remove`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: user.id,
+                wordId: wordId
+            })
+        });
+
+        if (!response.ok) throw new Error('Ошибка удаления слова');
+
+        // Обновляем статистику
+        if (currentModalStatus === 'learning') {
+            learningWords--;
+        } else if (currentModalStatus === 'learned') {
+            learnedWords--;
+        }
+
+        const learningElement = document.getElementById('learningWords');
+        const learnedElement = document.getElementById('learnedWords');
+
+        if (learningElement) learningElement.textContent = learningWords;
+        if (learnedElement) learnedElement.textContent = learnedWords;
+
+        alert(`Слово "${wordText}" удалено из вашего словаря!`);
+
+        // Обновляем модальное окно
+        await loadUserWordsByStatus(currentModalStatus);
+
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert(error.message);
     }
 }
 
