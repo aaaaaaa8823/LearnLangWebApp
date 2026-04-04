@@ -18,7 +18,7 @@ namespace LearnEnglishWebApp.Data.Repositories.Implementations
             await _context.UsersWords.AddAsync(userWord);
         }
 
-        public async void Delete(UserWord userWord)
+        public void Delete(UserWord userWord)
         {
             _context.UsersWords.Remove(userWord);
         }
@@ -50,7 +50,7 @@ namespace LearnEnglishWebApp.Data.Repositories.Implementations
             return await query.OrderByDescending(uw => uw.AddedAt).ToListAsync();
         }
 
-        public async void Update(UserWord userWord)
+        public void Update(UserWord userWord)
         {
             _context.UsersWords.Update(userWord);
         }

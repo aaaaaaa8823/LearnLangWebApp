@@ -33,46 +33,72 @@ namespace LearnEnglishWebApp.Services.Implementations
         {
             try
             {
+                _logger.LogInformation("Начинаем добавление слова: UserId={UserId}, WordId={WordId}, Status={Status}", userId, wordId, status);
+
                 var user = await _userRepository.GetByIdAsync(userId);
                 if (user == null)
-                    throw new InvalidOperationException("Пользователь не найден");
+                {
+                    _logger.LogWarning("Пользователь не найден: UserId={UserId}", userId);
+                    throw new InvalidOperationException($"Пользователь с ID {userId} не найден");
+                }
+                _logger.LogInformation("Пользователь найден: {UserName}", user.UserName);
 
                 var word = await _dictionaryRepository.GetByIdAsync(wordId);
-                if(word == null)
+                if (word == null)
                 {
-                    throw new InvalidOperationException("Слово не найдено");
+                    _logger.LogWarning("Слово не найдено: WordId={WordId}", wordId);
+                    throw new InvalidOperationException($"Слово с ID {wordId} не найдено");
                 }
+                _logger.LogInformation("Слово найдено: {Word}", word.Word);
 
                 var exists = await _userWordsRepository.ExistsAsync(userId, wordId);
                 if (exists)
+                {
+                    _logger.LogWarning("Слово уже добавлено пользователю: UserId={UserId}, WordId={WordId}", userId, wordId);
                     throw new InvalidOperationException("Это слово уже добавлено");
+                }
 
                 var userWord = new UserWord
                 {
                     UserId = userId,
                     WordId = wordId,
                     Status = status,
-                    AddedAt = DateTime.UtcNow
+                    AddedAt = DateTime.UtcNow,
+                    ContextSentence = ""
                 };
 
+                _logger.LogInformation("Добавляем запись в UserWords");
                 await _userWordsRepository.AddAsync(userWord);
+
+                _logger.LogInformation("Сохраняем изменения в БД");
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Слово добавлено пользователю: UserId={UserId}, WordId={WordId}", userId, wordId);
+                _logger.LogInformation("Слово успешно добавлено!");
 
-                    return new UserWordDto
-                    {
-                        Id = userWord.Id,
-                        UserId = userWord.UserId,
-                        WordId = userWord.WordId,
-                        Word = word.Word,
-                        Translations = word.Translation,
-                        Status = userWord.Status,
-                        AddedAt = userWord.AddedAt
-                    };
+                return new UserWordDto
+                {
+                    Id = userWord.Id,
+                    UserId = userWord.UserId,
+                    WordId = userWord.WordId,
+                    Word = word.Word,
+                    Translation = word.Translation,
+                    Status = userWord.Status,
+                    AddedAt = userWord.AddedAt
+                };
             }
-            catch(Exception ex) {
-                _logger.LogError(ex, "Ошибка при добавлении слова пользователю");
+            catch (DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "Ошибка БД при добавлении слова. Внутреннее исключение: {InnerException}", dbEx.InnerException?.Message);
+
+                if (dbEx.InnerException != null)
+                {
+                    throw new InvalidOperationException($"Ошибка БД: {dbEx.InnerException.Message}");
+                }
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Общая ошибка при добавлении слова пользователю");
                 throw;
             }
         }
@@ -87,7 +113,7 @@ namespace LearnEnglishWebApp.Services.Implementations
                 UserId = uw.UserId,
                 WordId = uw.WordId,
                 Word = uw.Word?.Word ?? "Неизвестно",
-                Translations = uw.Word?.Translation ?? "",
+                Translation = uw.Word?.Translation ?? "",
                 Status = uw.Status,
                 AddedAt = uw.AddedAt
             });
@@ -136,7 +162,7 @@ namespace LearnEnglishWebApp.Services.Implementations
                     UserId = userWord.UserId,
                     WordId = userWord.WordId,
                     Word = userWord.Word?.Word ?? "Неизвестно",
-                    Translations = userWord.Word?.Translation ?? "",
+                    Translation = userWord.Word?.Translation ?? "",
                     Status = userWord.Status,
                     AddedAt = userWord.AddedAt
                 };

@@ -67,20 +67,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 //тут регать сервисы и репозитории
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
 builder.Services.AddScoped<IDictionaryRepository, DictionaryRepository>();
-
-builder.Services.AddScoped<IUserService, UserService>();
-
-builder.Services.AddScoped<ISeedService, SeedService>();
-
-builder.Services.AddScoped<IDictionaryService, DictionaryService>();
-
 builder.Services.AddScoped<IUserWordsRepository, UserWordsRepository>();
 
-builder.Services.AddScoped<IDictionaryRepository, DictionaryRepository>();
-
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IDictionaryService, DictionaryService>();
 builder.Services.AddScoped<IUserWordsService, UserWordsService>();
+builder.Services.AddScoped<ISeedService, SeedService>();
 var app = builder.Build();
 
 app.UseStaticFiles(new StaticFileOptions

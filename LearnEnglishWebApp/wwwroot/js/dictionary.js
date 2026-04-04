@@ -36,6 +36,11 @@ async function loadDictionaryWords() {
 
     try {
         const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/';
+            return;
+        }
+
         const response = await fetch('/api/Dictionary/all', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -91,6 +96,11 @@ async function searchWords() {
 
     try {
         const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/';
+            return;
+        }
+
         const response = await fetch(`/api/Dictionary/search?q=${encodeURIComponent(searchTerm)}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -108,7 +118,20 @@ async function searchWords() {
 async function addWordToLearning(wordId, wordText) {
     try {
         const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user'));
+        if (!token) {
+            alert('Необходимо войти в систему');
+            window.location.href = '/';
+            return;
+        }
+
+        const userStr = localStorage.getItem('user');
+        if (!userStr) {
+            alert('Данные пользователя не найдены');
+            window.location.href = '/';
+            return;
+        }
+
+        const user = JSON.parse(userStr);
 
         const response = await fetch('/api/UserWords/add', {
             method: 'POST',
@@ -124,8 +147,15 @@ async function addWordToLearning(wordId, wordText) {
         });
 
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Ошибка добавления слова');
+            let errorMessage = 'Ошибка добавления слова';
+            try {
+                const error = await response.json();
+                errorMessage = error.message || errorMessage;
+            } catch (e) {
+                const text = await response.text();
+                if (text) errorMessage = text;
+            }
+            throw new Error(errorMessage);
         }
 
         learningWords++;
@@ -134,14 +164,27 @@ async function addWordToLearning(wordId, wordText) {
 
         alert(`Слово "${wordText}" добавлено в список "В процессе"`);
 
-        const button = event.target;
-        button.textContent = '✓ Добавлено';
-        button.disabled = true;
+        const wordItem = document.querySelector(`.word-item[data-word-id="${wordId}"]`);
+        if (wordItem) {
+            const button = wordItem.querySelector('.btn-add');
+            if (button) {
+                button.textContent = '✓ Добавлено';
+                button.disabled = true;
+                button.style.background = '#4caf50';
+            }
+        }
 
     } catch (error) {
         console.error('Ошибка:', error);
         alert(error.message);
     }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
