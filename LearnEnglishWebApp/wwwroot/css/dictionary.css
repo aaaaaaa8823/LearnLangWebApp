@@ -6,12 +6,12 @@
     box-sizing: border-box;
 }
 
-    .dictionary-page h1 {
-        color: #1a3b5d;
-        margin-bottom: 30px;
-        font-size: 2rem;
-        font-weight: 500;
-    }
+.dictionary-page h1 {
+    color: #1a3b5d;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    font-weight: 500;
+}
 
 .stats-row {
     display: flex;
@@ -30,29 +30,29 @@
     transition: all 0.3s ease;
 }
 
-    .stat-box:first-child {
-        background: #fff3e0;
-        border-left: 4px solid #ff9800;
+.stat-box:first-child {
+    background: #fff3e0;
+    border-left: 4px solid #ff9800;
+}
+
+    .stat-box:first-child:hover {
+        background: #ffe0b3;
+        border-left-color: #e65100;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
-        .stat-box:first-child:hover {
-            background: #ffe0b3;
-            border-left-color: #e65100;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
+.stat-box:last-child {
+    background: #e8f5e9;
+    border-left: 4px solid #4caf50;
+}
 
-    .stat-box:last-child {
-        background: #e8f5e9;
-        border-left: 4px solid #4caf50;
+    .stat-box:last-child:hover {
+        background: #c8e6c9;
+        border-left-color: #2e7d32;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-
-        .stat-box:last-child:hover {
-            background: #c8e6c9;
-            border-left-color: #2e7d32;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
 
 .stat-label {
     display: block;
@@ -100,11 +100,11 @@
     transition: all 0.3s ease;
 }
 
-    .search-input:focus {
-        outline: none;
-        border-color: #1a3b5d;
-        box-shadow: 0 0 0 3px rgba(26, 59, 93, 0.1);
-    }
+.search-input:focus {
+    outline: none;
+    border-color: #1a3b5d;
+    box-shadow: 0 0 0 3px rgba(26, 59, 93, 0.1);
+}
 
 .words-list {
     background: white;
@@ -125,13 +125,13 @@
     transition: background 0.2s ease;
 }
 
-    .word-item:hover {
-        background: #f8fafd;
-    }
+.word-item:hover {
+    background: #f8fafd;
+}
 
-    .word-item:last-child {
-        border-bottom: none;
-    }
+.word-item:last-child {
+    border-bottom: none;
+}
 
 .word-info {
     flex: 1;
@@ -197,22 +197,22 @@
     transition: all 0.3s ease;
 }
 
-    .btn-add:hover {
-        background: #f57c00;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
-    }
+.btn-add:hover {
+    background: #f57c00;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+}
 
-    .btn-add:active {
-        transform: translateY(0);
-    }
+.btn-add:active {
+    transform: translateY(0);
+}
 
-    .btn-add:disabled {
-        background: #4caf50;
-        cursor: default;
-        transform: none;
-        box-shadow: none;
-    }
+.btn-add:disabled {
+    background: #4caf50;
+    cursor: default;
+    transform: none;
+    box-shadow: none;
+}
 
 .loading {
     text-align: center;
