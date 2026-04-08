@@ -3,10 +3,38 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="tests-page">
-    <h1>Уроки по английскому</h1>
+<div class="lessons-page">
+    <h1>Уроки английского</h1>
 
-    <div class="tests-grid" id="testsContainer">
+    <div class="stats-row">
+        <div class="stat-box" onclick="switchFilter('my')" data-filter="my">
+            <span class="stat-label">Сохраненные уроки</span>
+            <span class="stat-number" id="myLessonsCount">0</span>
+        </div>
+        <div class="stat-box" onclick="switchFilter('in-progress')" data-filter="in-progress">
+            <span class="stat-label">В процессе</span>
+            <span class="stat-number" id="inProgressLessonsCount">0</span>
+        </div>
+        <div class="stat-box" onclick="switchFilter('completed')" data-filter="completed">
+            <span class="stat-label">Пройдено</span>
+            <span class="stat-number" id="completedLessonsCount">0</span>
+        </div>
+    </div>
+
+    <div class="search-wrapper">
+        <input type="text"
+               class="search-input"
+               id="lessonSearch"
+               placeholder="Поиск урока..."
+               aria-label="Поиск по урокам" />
+    </div>
+
+    <div class="lessons-grid" id="lessonsContainer">
         <div class="loading">Загрузка уроков...</div>
     </div>
 </div>
+
+@section Scripts {
+    <link rel="stylesheet" href="~/css/lessons.css" asp-append-version="true" />
+    <script src="~/js/lessons.js" asp-append-version="true"></script>
+}

@@ -7,7 +7,6 @@
 }
 
 .tests-page,
-.lessons-page,
 .profile-content {
     padding: 30px;
     max-width: 1200px;
@@ -17,7 +16,6 @@
 }
 
 .tests-page h1,
-.lessons-page h1,
 .profile-content h1 {
     color: #1a3b5d;
     margin-bottom: 30px;
@@ -26,8 +24,7 @@
 }
 
 /* Списки тестов и уроков */
-.tests-list,
-.lessons-list {
+.tests-list {
     background: white;
     padding: 20px;
     border: 1px solid #eef2f6;
@@ -36,8 +33,7 @@
     box-sizing: border-box;
 }
 
-.test-item,
-.lesson-item {
+.test-item{
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -214,7 +210,6 @@
     }
 
     .tests-page,
-    .lessons-page,
     .profile-content {
         padding: 20px;
     }
