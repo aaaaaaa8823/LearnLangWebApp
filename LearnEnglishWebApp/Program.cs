@@ -69,11 +69,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDictionaryRepository, DictionaryRepository>();
 builder.Services.AddScoped<IUserWordsRepository, UserWordsRepository>();
+builder.Services.AddScoped<IGrammarTopicRepository, GrammarTopicRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDictionaryService, DictionaryService>();
 builder.Services.AddScoped<IUserWordsService, UserWordsService>();
 builder.Services.AddScoped<ISeedService, SeedService>();
+builder.Services.AddScoped<IGrammarTopicService, GrammarTopicService>();
+
 var app = builder.Build();
 
 app.UseStaticFiles(new StaticFileOptions

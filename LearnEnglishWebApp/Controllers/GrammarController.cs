@@ -23,15 +23,27 @@ namespace LearnEnglishWebApp.Controllers
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                Console.WriteLine($"userIdClaim: {userIdClaim}");
+
                 if (userIdClaim == null || !long.TryParse(userIdClaim, out long userId))
+                {
+                    Console.WriteLine("Unauthorized - userIdClaim is null or invalid");
                     return Unauthorized();
+                }
+
+                Console.WriteLine($"UserId: {userId}");
 
                 var topics = await _grammarTopicService.GetUserTopicsWithProgressAsync(userId);
+
+                Console.WriteLine($"Topics count: {topics?.Count() ?? 0}");
+
                 return Ok(topics);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                Console.WriteLine($"Error in GetAllTopics: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return BadRequest(new { message = ex.Message, details = ex.ToString() });
             }
         }
 
