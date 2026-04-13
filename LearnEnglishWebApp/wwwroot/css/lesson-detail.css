@@ -1,0 +1,265 @@
+﻿.main-with-sidebar {
+    margin-left: 250px;
+    min-height: 100vh;
+    background: #f8fafd;
+    width: calc(100% - 250px);
+    box-sizing: border-box;
+}
+
+.lesson-detail-page {
+    padding: 30px;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.lesson-container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 35, 70, 0.08);
+    overflow: hidden;
+}
+
+.lesson-header {
+    background: linear-gradient(135deg, #1a3b5d 0%, #2c5a7a 100%);
+    padding: 40px;
+    color: white;
+}
+
+.lesson-header h1 {
+    font-size: 2rem;
+    margin: 0 0 10px 0;
+    font-weight: 600;
+}
+
+.lesson-level {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-top: 10px;
+}
+
+.lesson-body {
+    padding: 40px;
+}
+
+.theory-section {
+    margin-bottom: 40px;
+}
+
+.theory-section h2 {
+    color: #1a3b5d;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eef2f6;
+}
+
+.theory-content {
+    color: #4a5568;
+    line-height: 1.8;
+    font-size: 1rem;
+}
+
+.theory-content p {
+    margin-bottom: 15px;
+}
+
+.theory-content h3 {
+    color: #1a3b5d;
+    margin: 20px 0 10px 0;
+}
+
+.theory-content ul,
+.theory-content ol {
+    margin: 10px 0 20px 20px;
+}
+
+.theory-content li {
+    margin: 5px 0;
+}
+
+.examples-section {
+    background: #f8fafd;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 40px;
+}
+
+.examples-section h2 {
+    color: #1a3b5d;
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+}
+
+.examples-list {
+    list-style: none;
+    padding: 0;
+}
+
+.examples-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #eef2f6;
+    color: #4a5568;
+    font-style: italic;
+}
+
+.examples-list li:last-child {
+    border-bottom: none;
+}
+
+/* Футер урока */
+.lesson-footer {
+    border-top: 1px solid #eef2f6;
+    padding: 30px 40px;
+    background: #f8fafd;
+}
+
+/* Кнопки */
+.btn-complete {
+    width: 100%;
+    padding: 14px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-bottom: 20px;
+}
+
+.btn-complete:hover {
+    background: #43a047;
+}
+
+.completed-message {
+    text-align: center;
+    padding: 14px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+/* Доступные тесты */
+.available-tests {
+    margin-top: 20px;
+}
+
+.available-tests h3 {
+    color: #1a3b5d;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.tests-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.test-card {
+    background: white;
+    border: 1px solid #eef2f6;
+    border-radius: 12px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.test-card:hover {
+    border-color: #1a3b5d;
+    box-shadow: 0 2px 8px rgba(0, 35, 70, 0.05);
+}
+
+.test-info {
+    flex: 1;
+}
+
+.test-title {
+    font-weight: 600;
+    color: #1a3b5d;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.test-details {
+    font-size: 0.8rem;
+    color: #6b7a8f;
+}
+
+.btn-test {
+    padding: 8px 20px;
+    background: #ff9800;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.3s;
+}
+
+.btn-test:hover {
+    background: #f57c00;
+}
+
+/* Состояния */
+.loading {
+    text-align: center;
+    padding: 60px;
+    color: #6b7a8f;
+}
+
+.error {
+    text-align: center;
+    padding: 40px;
+    color: #c62828;
+    background: #ffebee;
+    border-radius: 12px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .main-with-sidebar {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .lesson-detail-page {
+        padding: 20px;
+    }
+
+    .lesson-header {
+        padding: 25px;
+    }
+
+        .lesson-header h1 {
+            font-size: 1.5rem;
+        }
+
+    .lesson-body {
+        padding: 25px;
+    }
+
+    .lesson-footer {
+        padding: 25px;
+    }
+
+    .test-card {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .btn-test {
+        width: 100%;
+    }
+}

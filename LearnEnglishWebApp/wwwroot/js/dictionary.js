@@ -46,7 +46,6 @@ async function showWordsModal(status) {
     modal.style.display = 'block';
     modalBody.innerHTML = '<div class="loading-modal">Загрузка...</div>';
 
-    // Загружаем слова
     await loadUserWordsByStatus(status);
 }
 
@@ -172,7 +171,6 @@ async function markAsLearned(wordId, wordText) {
 
         if (!response.ok) throw new Error('Ошибка обновления статуса');
 
-        // Обновляем статистику
         learningWords--;
         learnedWords++;
 
@@ -184,7 +182,6 @@ async function markAsLearned(wordId, wordText) {
 
         alert(`Слово "${wordText}" отмечено как выученное!`);
 
-        // Обновляем модальное окно
         if (currentModalStatus === 'learning') {
             await loadUserWordsByStatus('learning');
         }
@@ -215,7 +212,6 @@ async function markAsLearning(wordId, wordText) {
 
         if (!response.ok) throw new Error('Ошибка обновления статуса');
 
-        // Обновляем статистику
         learningWords++;
         learnedWords--;
 
@@ -227,7 +223,6 @@ async function markAsLearning(wordId, wordText) {
 
         alert(`Слово "${wordText}" возвращено в процесс изучения!`);
 
-        // Обновляем модальное окно
         if (currentModalStatus === 'learned') {
             await loadUserWordsByStatus('learned');
         }
@@ -261,7 +256,6 @@ async function removeWord(wordId, wordText) {
 
         if (!response.ok) throw new Error('Ошибка удаления слова');
 
-        // Обновляем статистику
         if (currentModalStatus === 'learning') {
             learningWords--;
         } else if (currentModalStatus === 'learned') {
@@ -276,7 +270,6 @@ async function removeWord(wordId, wordText) {
 
         alert(`Слово "${wordText}" удалено из вашего словаря!`);
 
-        // Обновляем модальное окно
         await loadUserWordsByStatus(currentModalStatus);
 
     } catch (error) {

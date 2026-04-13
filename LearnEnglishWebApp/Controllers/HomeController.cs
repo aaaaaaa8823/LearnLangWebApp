@@ -10,7 +10,12 @@ namespace LearnEnglishWebApp.Controllers
             ViewBag.ShowSidebar = false;
             return View();
         }
-        
+        public IActionResult LessonDetail()
+        {
+            ViewBag.ShowSidebar = true;
+            return View();
+        }
+
         public IActionResult Me()
         {
             ViewBag.ShowSidebar = true;
