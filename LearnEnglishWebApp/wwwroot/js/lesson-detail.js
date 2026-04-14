@@ -67,14 +67,14 @@ function displayLesson() {
             
             <div class="lesson-body">
                 <div class="theory-section">
-                    <h2>📖 Теория</h2>
+                    <h2>Теория</h2>
                     <div class="theory-content">
                         ${theoryContent}
                     </div>
                 </div>
                 
                 <div class="examples-section">
-                    <h2>📝 Примеры</h2>
+                    <h2>Примеры</h2>
                     <ul class="examples-list">
                         ${examplesContent.map(ex => `<li>${escapeHtml(ex)}</li>`).join('')}
                     </ul>

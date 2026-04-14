@@ -16,6 +16,12 @@ namespace LearnEnglishWebApp.Controllers
             return View();
         }
 
+        public IActionResult Saved()
+        {
+            ViewBag.ShowSidebar = true;
+            return View();
+        }
+
         public IActionResult Me()
         {
             ViewBag.ShowSidebar = true;
