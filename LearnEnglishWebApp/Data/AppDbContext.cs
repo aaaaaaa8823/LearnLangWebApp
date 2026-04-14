@@ -23,6 +23,8 @@ namespace LearnEnglishWebApp.Data
         public DbSet<VocabTest> VocabTests { get; set; }
 
         public DbSet<TestResult> TestResults { get; set; }
+        public DbSet<UserLesson> UserLessons { get; set; }
+        public DbSet<UserTest> UserTests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,6 +42,15 @@ namespace LearnEnglishWebApp.Data
             modelBuilder.Entity<Dictionary>().HasIndex(d => d.Word).IsUnique();
             modelBuilder.Entity<UserWord>().HasIndex(uw => new { uw.UserId, uw.WordId }).IsUnique();
             modelBuilder.Entity<Collection>().HasIndex(c => new { c.UserId, c.Name }).IsUnique();
+
+            // Уникальные индексы для сохраненных уроков и тестов (чтобы нельзя было сохранить дважды)
+            modelBuilder.Entity<UserLesson>()
+                .HasIndex(ul => new { ul.UserId, ul.LessonId, ul.LessonType })
+                .IsUnique();
+
+            modelBuilder.Entity<UserTest>()
+                .HasIndex(ut => new { ut.UserId, ut.TestId, ut.TestType })
+                .IsUnique();
 
             // Связи для UserWord
             modelBuilder.Entity<UserWord>()
@@ -88,6 +99,20 @@ namespace LearnEnglishWebApp.Data
                 .HasForeignKey(tr => tr.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // связи UserLesson
+            modelBuilder.Entity<UserLesson>()
+                .HasOne(ul => ul.User)
+                .WithMany(u => u.SavedLessons)
+                .HasForeignKey(ul => ul.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // связи UserTest
+            modelBuilder.Entity<UserTest>()
+                .HasOne(ut => ut.User)
+                .WithMany(u => u.SavedTests)
+                .HasForeignKey(ut => ut.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Индексы для производительности
             modelBuilder.Entity<UserWord>().HasIndex(uw => uw.Status);
             modelBuilder.Entity<Dictionary>().HasIndex(d => d.DifficultyLevel);
@@ -103,7 +128,12 @@ namespace LearnEnglishWebApp.Data
             modelBuilder.Entity<TestResult>().HasIndex(tr => tr.TestType);
             modelBuilder.Entity<TestResult>().HasIndex(tr => new { tr.TestType, tr.TestId });
             modelBuilder.Entity<TestResult>().HasIndex(tr => tr.IsPassed);
-        }
 
+            // Индексы для сохраненных уроков и тестов
+            modelBuilder.Entity<UserLesson>().HasIndex(ul => ul.UserId);
+            modelBuilder.Entity<UserLesson>().HasIndex(ul => ul.SavedAt);
+            modelBuilder.Entity<UserTest>().HasIndex(ut => ut.UserId);
+            modelBuilder.Entity<UserTest>().HasIndex(ut => ut.SavedAt);
+        }
     }
 }

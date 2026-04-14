@@ -35,6 +35,8 @@ namespace LearnEnglishWebApp.Models
 
         public ICollection<TestResult> TestResults { get; set; } = new List<TestResult>();
 
+        public ICollection<UserLesson> SavedLessons { get; set; } = new List<UserLesson>();
+        public ICollection<UserTest> SavedTests { get; set; } = new List<UserTest>();
 
     }
     
