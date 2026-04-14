@@ -5,18 +5,19 @@
 
 <div class="saved-page">
     <h1>Сохраненные уроки и тесты</h1>
-    <div id="sacedContainer">
-        <div class="loading">Загрузка урока...</div>
-    </div>
-</div>
 
-<div class="search-wrapper">
+    <div class="search-wrapper">
         <input type="text"
                class="search-input"
                id="savedSearch"
-               placeholder="Поиск урокам и тестам..."
-               aria-label="Поиск по урокам и тестам" />
+               placeholder="Поиск по сохраненным урокам и тестам..."
+               aria-label="Поиск по сохраненным урокам" />
     </div>
+
+    <div class="saved-grid" id="savedContainer">
+        <div class="loading">Загрузка сохраненных уроков...</div>
+    </div>
+</div>
 
 @section Scripts {
     <link rel="stylesheet" href="~/css/saved.css" asp-append-version="true" />

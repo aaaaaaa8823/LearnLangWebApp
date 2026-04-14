@@ -26,7 +26,7 @@ namespace LearnEnglishWebApp.Services.Implementations
             _logger = logger;
         }
 
-        public async Task<IEnumerable<SavedLessonDto>> GetSaveLessonsAsync(long userId)
+        public async Task<IEnumerable<SavedLessonDto>> GetSavedLessonsAsync(long userId)
         {
            var savedLessons = await _userLessonRepository.GetByUserIdAsync(userId);
 
@@ -73,12 +73,12 @@ namespace LearnEnglishWebApp.Services.Implementations
             return result.OrderByDescending(r => r.SavedAt);
         }
 
-        public async Task<bool> IsLessonSaveAsync(long userId, long lessonId, string lessonType)
+        public async Task<bool> IsLessonSavedAsync(long userId, long lessonId, string lessonType)
         {
             return await _userLessonRepository.ExistsAsync(userId, lessonId, lessonType);
         }
 
-        public async Task<bool> RemoveSaveLessonAsync(long userId, long lessonId, string lessonType)
+        public async Task<bool> RemoveSavedLessonAsync(long userId, long lessonId, string lessonType)
         {
             try
             {

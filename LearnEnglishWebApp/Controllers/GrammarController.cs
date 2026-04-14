@@ -1,4 +1,5 @@
-﻿using LearnEnglishWebApp.Services.Interfaces;
+﻿using LearnEnglishWebApp.Services.Implementations;
+using LearnEnglishWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -11,10 +12,13 @@ namespace LearnEnglishWebApp.Controllers
     public class GrammarController : ControllerBase
     {
         private readonly IGrammarTopicService _grammarTopicService;
+        private readonly IUserLessonService _userLessonService;
 
-        public GrammarController(IGrammarTopicService grammarTopicService)
+        public GrammarController(IGrammarTopicService grammarTopicService,
+                                 IUserLessonService userLessonService)  
         {
             _grammarTopicService = grammarTopicService;
+            _userLessonService = userLessonService;
         }
 
         [HttpGet("topics")]
@@ -75,6 +79,64 @@ namespace LearnEnglishWebApp.Controllers
 
                 var result = await _grammarTopicService.MarkTopicAsCompletedAsync(userId, id);
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("topic/{id}/save")]
+        public async Task<IActionResult> SaveLesson(long id)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null || !long.TryParse(userIdClaim, out long userId))
+                    return Unauthorized(new { message = "Пользователь не авторизован" });
+
+                var result = await _userLessonService.SaveLessonAsync(userId, id, "grammar");
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("saved")]
+        public async Task<IActionResult> GetSavedLessons()
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null || !long.TryParse(userIdClaim, out long userId))
+                    return Unauthorized();
+
+                var lessons = await _userLessonService.GetSavedLessonsAsync(userId);
+                return Ok(lessons);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("topic/{id}/unsave")]
+        public async Task<IActionResult> UnsaveLesson(long id)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null || !long.TryParse(userIdClaim, out long userId))
+                    return Unauthorized();
+
+                var result = await _userLessonService.RemoveSavedLessonAsync(userId, id, "grammar");
+                return Ok(new { success = result });
             }
             catch (Exception ex)
             {
