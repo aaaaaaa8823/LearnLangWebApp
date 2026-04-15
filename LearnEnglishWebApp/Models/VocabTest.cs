@@ -34,9 +34,9 @@ namespace LearnEnglishWebApp.Models
 
         public int OrderIndex { get; set; }
 
-        public bool IsActive { get; set; } = true;
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public bool IsActive { get; set; } = true;
 
         [ForeignKey("VocabLessonId")]
         public VocabLesson VocabLesson { get; set; }

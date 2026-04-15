@@ -21,11 +21,9 @@ namespace LearnEnglishWebApp.Models
 
         public int OrderIndex { get; set; }
 
-        public bool IsActive { get; set; } = true;
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-
+        public bool IsActive { get; set; } = true;
         public ICollection<VocabTest> VocabTests { get; set; } = new List<VocabTest>();
         public ICollection<UserVocabProgress> UserProgress { get; set; } = new List<UserVocabProgress>();
     }
