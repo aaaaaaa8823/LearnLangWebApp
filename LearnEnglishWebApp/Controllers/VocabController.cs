@@ -11,10 +11,14 @@ namespace LearnEnglishWebApp.Controllers
     public class VocabController : ControllerBase
     {
         private readonly IVocabTopicService _vocabTopicService;
+        private readonly IUserLessonService _userLessonService;
 
-        public VocabController(IVocabTopicService vocabTopicService)
+        public VocabController(
+    IVocabTopicService vocabTopicService,
+    IUserLessonService userLessonService)  
         {
             _vocabTopicService = vocabTopicService;
+            _userLessonService = userLessonService;
         }
 
         [HttpGet("topics")]
@@ -63,6 +67,68 @@ namespace LearnEnglishWebApp.Controllers
 
                 var result = await _vocabTopicService.MarkTopicAsCompletedAsync(userId, id);
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        // Controllers/VocabController.cs - добавь эти методы
+
+        [HttpPost("topic/{id}/save")]
+        public async Task<IActionResult> SaveLesson(long id)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null || !long.TryParse(userIdClaim, out long userId))
+                    return Unauthorized(new { message = "Пользователь не авторизован" });
+
+                var result = await _userLessonService.SaveLessonAsync(userId, id, "vocab");
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("topic/{id}/unsave")]
+        public async Task<IActionResult> UnsaveLesson(long id)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null || !long.TryParse(userIdClaim, out long userId))
+                    return Unauthorized();
+
+                var result = await _userLessonService.RemoveSavedLessonAsync(userId, id, "vocab");
+                return Ok(new { success = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("saved")]
+        public async Task<IActionResult> GetSavedLessons()
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null || !long.TryParse(userIdClaim, out long userId))
+                    return Unauthorized();
+
+                var lessons = await _userLessonService.GetSavedLessonsAsync(userId);
+                // Фильтруем только vocab уроки для этого контроллера
+                var vocabLessons = lessons.Where(l => l.LessonType == "vocab");
+                return Ok(vocabLessons);
             }
             catch (Exception ex)
             {

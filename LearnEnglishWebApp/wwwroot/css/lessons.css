@@ -234,3 +234,22 @@
     }
 }
 
+.lesson-type {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+    .lesson-type.grammar {
+        background: #1a3b5d;
+        color: white;
+    }
+
+    .lesson-type.vocab {
+        background: #ff9800;
+        color: white;
+    }
+

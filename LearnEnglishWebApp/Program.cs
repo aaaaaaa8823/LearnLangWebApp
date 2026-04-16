@@ -72,6 +72,7 @@ builder.Services.AddScoped<IDictionaryRepository, DictionaryRepository>();
 builder.Services.AddScoped<IUserWordsRepository, UserWordsRepository>();
 builder.Services.AddScoped<IGrammarTopicRepository, GrammarTopicRepository>();
 builder.Services.AddScoped<IUserLessonRepository, UserLessonRepository>();
+builder.Services.AddScoped<IVocabTopicRepository, VocabTopicRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDictionaryService, DictionaryService>();
@@ -79,6 +80,7 @@ builder.Services.AddScoped<IUserWordsService, UserWordsService>();
 builder.Services.AddScoped<ISeedService, SeedService>();
 builder.Services.AddScoped<IGrammarTopicService, GrammarTopicService>();
 builder.Services.AddScoped<IUserLessonService, UserLessonService>();
+builder.Services.AddScoped<IVocabTopicService, VocabTopicService>();
 
 var app = builder.Build();
 

@@ -10,18 +10,20 @@ namespace LearnEnglishWebApp.Services.Implementations
     {
         private readonly IUserLessonRepository _userLessonRepository;
         private readonly IGrammarTopicRepository _grammarTopicRepository;
-        //private readonly IVocabLessonRepository _vocabLessonRepository;
+        private readonly IVocabTopicRepository _vocabTopicRepository;
         private readonly AppDbContext _context;
         private readonly ILogger<UserLessonService> _logger;
 
         public UserLessonService(
-            IUserLessonRepository userLessonRepository,
-            IGrammarTopicRepository grammarTopicRepository,
-            AppDbContext context,
-            ILogger<UserLessonService> logger)
+        IUserLessonRepository userLessonRepository,
+        IGrammarTopicRepository grammarTopicRepository,
+        IVocabTopicRepository vocabTopicRepository,  
+        AppDbContext context,
+        ILogger<UserLessonService> logger)
         {
             _userLessonRepository = userLessonRepository;
             _grammarTopicRepository = grammarTopicRepository;
+            _vocabTopicRepository = vocabTopicRepository;  
             _context = context;
             _logger = logger;
         }
@@ -51,23 +53,23 @@ namespace LearnEnglishWebApp.Services.Implementations
                         });
                     }
                 }
-                //else if (saved.LessonType == "vocab")
-                //{
-                //    var lesson = await _vocabLessonRepository.GetByIdAsync(saved.LessonId);
-                //    if (lesson != null)
-                //    {
-                //        result.Add(new SavedLessonDto
-                //        {
-                //            Id = saved.Id,
-                //            LessonId = saved.LessonId,
-                //            Title = lesson.Title,
-                //            Level = lesson.Level,
-                //            Description = lesson.Description,
-                //            LessonType = saved.LessonType,
-                //            SavedAt = saved.SavedAt
-                //        });
-                //    }
-                //}
+                else if (saved.LessonType == "vocab")
+                {
+                    var lesson = await _vocabTopicRepository.GetByIdAsync(saved.LessonId);
+                    if (lesson != null)
+                    {
+                        result.Add(new SavedLessonDto
+                        {
+                            Id = saved.Id,
+                            LessonId = saved.LessonId,
+                            Title = lesson.Title,
+                            Level = lesson.Level,
+                            Description = lesson.Description,
+                            LessonType = saved.LessonType,
+                            SavedAt = saved.SavedAt
+                        });
+                    }
+                }
             }
 
             return result.OrderByDescending(r => r.SavedAt);
@@ -118,15 +120,15 @@ namespace LearnEnglishWebApp.Services.Implementations
                     level = lesson.Level;
                     description = lesson.Description;
                 }
-                //else if (lessonType == "vocab")
-                //{
-                //    var lesson = await _vocabLessonRepository.GetByIdAsync(lessonId);
-                //    if (lesson == null)
-                //        throw new InvalidOperationException("Лексический урок не найден");
-                //    title = lesson.Title;
-                //    level = lesson.Level;
-                //    description = lesson.Description;
-                //}
+                else if (lessonType == "vocab")
+                {
+                    var lesson = await _vocabTopicRepository.GetByIdAsync(lessonId);
+                    if (lesson == null)
+                        throw new InvalidOperationException("Лексический урок не найден");
+                    title = lesson.Title;
+                    level = lesson.Level;
+                    description = lesson.Description;
+                }
                 else
                 {
                     throw new InvalidOperationException($"Неизвестный тип урока: {lessonType}");
