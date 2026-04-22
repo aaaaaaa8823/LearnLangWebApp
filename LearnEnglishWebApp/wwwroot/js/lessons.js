@@ -120,9 +120,9 @@ function displayLessons(lessons) {
         let buttonHtml = '';
 
         if (lesson.isSaved) {
-            buttonHtml = `<button class="btn-add saved" onclick="event.stopPropagation(); unsaveLesson(${lesson.id}, '${lesson.type}')" style="background:#4caf50;">✓ Сохранено</button>`;
+            buttonHtml = `<button class="btn-add saved" onclick="event.stopPropagation(); unsaveLesson(${lesson.id}, '${lesson.type}')" style="background:#4caf50;">Сохранено</button>`;
         } else {
-            buttonHtml = `<button class="btn-add" onclick="event.stopPropagation(); saveLesson(${lesson.id}, '${lesson.type}')">+ Сохранить</button>`;
+            buttonHtml = `<button class="btn-add" onclick="event.stopPropagation(); saveLesson(${lesson.id}, '${lesson.type}')">Сохранить</button>`;
         }
 
         return `
@@ -130,7 +130,7 @@ function displayLessons(lessons) {
                 <div class="lesson-header">
                     <span class="lesson-level">${escapeHtml(lesson.level)}</span>
                     ${typeBadge}
-                    ${lesson.isCompleted ? '<span class="completed-badge">✓ Пройдено</span>' : ''}
+                    ${lesson.isCompleted ? '<span class="completed-badge">Пройдено</span>' : ''}
                 </div>
                 <div class="lesson-body">
                     <div class="lesson-title">${escapeHtml(lesson.title)}</div>
