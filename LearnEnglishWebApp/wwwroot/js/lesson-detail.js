@@ -1,5 +1,14 @@
 ﻿let currentLesson = null;
 let lessonType = null;
+let currentSectionIndex = 0;
+let sections = [];
+
+const sectionConfig = [
+    { id: 'theory', title: "Теория" },
+    { id: 'examples', title: "Примеры" },
+    { id: 'tests', title: "Тесты" },
+    { id: 'complete', title: "Завершение" }
+];
 
 async function loadLesson() {
     const container = document.getElementById('lessonContainer');
@@ -43,6 +52,8 @@ async function loadLesson() {
         currentLesson = await response.json();
         console.log('Урок загружен:', currentLesson);
 
+
+        prepareSections();
         displayLesson();
 
     } catch (error) {
@@ -51,85 +62,151 @@ async function loadLesson() {
     }
 }
 
-function displayLesson() {
-    const container = document.getElementById('lessonContainer');
+function prepareSections() {
+    sections = [];
 
-    if (!currentLesson) {
-        container.innerHTML = '<div class="error">Данные урока не загружены</div>';
-        return;
-    }
+    sections.push({
+        id: 'theory',
+        title: 'Теория',
+        content: getTheoryContent(currentLesson.title)
+    });
+
+    sections.push({
+        id: 'examples',
+        title: 'Примеры',
+        content: getExamplesContent(currentLesson.title)
+    });
+
+    const testsHtml = currentLesson.tests && currentLesson.tests.length > 0
+        ? `
+            <div class="tests-list">
+                ${currentLesson.tests.map(test => `
+                    <div class="test-card">
+                        <div class="test-info">
+                            <span class="test-title">${escapeHtml(test.title)}</span>
+                            <span class="test-details">
+                                ${test.questionCount} вопросов | 
+                                Проходной балл: ${test.passingScore}% | 
+                                Время: ${test.timeLimitMinutes} мин
+                            </span>
+                        </div>
+                        <button class="btn-test" onclick="startTest(${test.id})">
+                            Пройти тест
+                        </button>
+                    </div>
+                `).join('')}
+            </div>
+        `
+        : '<p class="no-tests">К этому уроку пока нет тестов</p>';
+
+    sections.push({
+        id: 'tests',
+        title: 'Тесты',
+        content: testsHtml
+    });
 
     const isCompleted = currentLesson.userProgress?.completed || false;
     const completedAt = currentLesson.userProgress?.completedAt;
     const completedDate = completedAt ? new Date(completedAt).toLocaleDateString('ru-RU') : '';
 
-    const typeLabel = lessonType === 'vocab' ? 'Вокабуляр' : 'Грамматика';
+    const completeHtml = !isCompleted
+        ? `
+            <div class="complete-section">
+                <p>Вы изучили материал урока? Отметьте его как пройденный!</p>
+                <button class="btn-complete" onclick="markLessonComplete()">
+                    Отметить как пройденный
+                </button>
+            </div>
+        `
+        : `
+            <div class="completed-section">
+                <div class="completed-message">
+                    Урок пройден ${completedDate}!
+                </div>
+                <p>Вы можете повторить материал или перейти к следующему уроку.</p>
+            </div>
+        `;
 
-    const theoryContent = getTheoryContent(currentLesson.title);
-    const examplesContent = getExamplesContent(currentLesson.title);
+    sections.push({
+        id: 'complete',
+        title: 'Завершение',
+        content: completeHtml
+    });
+}
+function displayLesson() {
+    const container = document.getElementById('lessonContainer');
+
+    if (!sections.length) {
+        container.innerHTML = '<div class="error">Ошибка загрузки секций урока</div>';
+        return;
+    }
+
+    const currentSection = sections[currentSectionIndex];
+    const totalSections = sections.length;
 
     container.innerHTML = `
-        <div class="lesson-container">
-            <div class="lesson-header">
-                <div class="lesson-level">Уровень: ${escapeHtml(currentLesson.level)} | Тип: ${typeLabel}</div>
-            </div>
-            
-            <div class="lesson-body">
-                <div class="theory-section">
-                    <h2>Теория</h2>
-                    <div class="theory-content">
-                        ${theoryContent}
-                    </div>
-                </div>
-                
-                <div class="examples-section">
-                    <h2>Примеры</h2>
-                    <ul class="examples-list">
-                        ${examplesContent.map(ex => `<li>${escapeHtml(ex)}</li>`).join('')}
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="lesson-footer">
-                ${!isCompleted ? `
-                    <button class="btn-complete" onclick="markLessonComplete()">
-                        Отметить как пройденный
-                    </button>
-                ` : `
-                    <div class="completed-message">
-                        ✓ Урок пройден ${completedDate}
-                    </div>
-                `}
-                
-                ${currentLesson.tests && currentLesson.tests.length > 0 ? `
-                    <div class="available-tests">
-                        <h3>Доступные тесты:</h3>
-                        <div class="tests-list">
-                            ${currentLesson.tests.map(test => `
-                                <div class="test-card">
-                                    <div class="test-info">
-                                        <span class="test-title">${escapeHtml(test.title)}</span>
-                                        <span class="test-details">
-                                            ${test.questionCount} вопросов | 
-                                            Проходной балл: ${test.passingScore}% | 
-                                            Время: ${test.timeLimitMinutes} мин
-                                        </span>
-                                    </div>
-                                    <button class="btn-test" onclick="startTest(${test.id}, '${lessonType}')">
-                                        Пройти тест
-                                    </button>
-                                </div>
-                            `).join('')}
+        <div class="carousel-container">
+            <div class="carousel-header">
+                <div class="progress-indicator">
+                    ${sections.map((section, idx) => `
+                        <div class="progress-dot ${idx === currentSectionIndex ? 'active' : ''} ${idx < currentSectionIndex ? 'completed' : ''}"
+                             onclick="goToSection(${idx})">
                         </div>
+                    `).join('')}
+                </div>
+                <div class="section-title">
+                    <h2>${sectionConfig[currentSectionIndex]?.title || currentSection.title}</h2>
+                </div>
+            </div>
+            
+            <div class="carousel-content">
+                <button class="carousel-nav prev" onclick="prevSection()" ${currentSectionIndex === 0 ? 'disabled' : ''}>
+                     <i class="fas fa-chevron-left"></i> 
+                </button>
+                
+                <div class="section-card">
+                    <div class="section-content">
+                        ${currentSection.content}
                     </div>
-                ` : `
-                    <div class="available-tests">
-                        <p style="color: #6b7a8f; text-align: center;">К этому уроку пока нет тестов</p>
-                    </div>
-                `}
+                </div>
+                
+                <button class="carousel-nav next" onclick="nextSection()" ${currentSectionIndex === totalSections - 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <div class="carousel-footer">
+                <div class="lesson-info">
+                    <span class="lesson-level">Уровень: ${escapeHtml(currentLesson.level)}</span>
+                    <span class="lesson-type">Тип: ${lessonType === 'vocab' ? 'Вокабуляр' : 'Грамматика'}</span>
+                </div>
+                <div class="carousel-pagination">
+                    ${currentSectionIndex + 1} / ${totalSections}
+                </div>
             </div>
         </div>
     `;
+}
+
+function nextSection() {
+    if (currentSectionIndex < sections.length - 1) {
+        currentSectionIndex++;
+        displayLesson();
+    }
+}
+
+function prevSection() {
+    if (currentSectionIndex > 0) {
+        currentSectionIndex--;
+        displayLesson();
+    }
+}
+
+function goToSection(index) {
+    if (index >= 0 && index < sections.length) {
+        currentSectionIndex = index;
+        displayLesson();
+    }
 }
 
 async function markLessonComplete() {
@@ -165,8 +242,8 @@ async function markLessonComplete() {
     }
 }
 
-function startTest(testId, type) {
-    window.location.href = `/Home/TestDetail?id=${testId}&type=${type}`;
+function startTest(testId) {
+    window.location.href = `/Home/TestDetail?id=${testId}&type=${lessonType}`;
 }
 
 function getExamplesContent(title) {
@@ -201,6 +278,8 @@ function getExamplesContent(title) {
         'Пример 2 с переводом',
         'Пример 3 с переводом'
     ];
+
+    return `<ul class="examples-list">${examples.map(ex => `<li>${escapeHtml(ex)}</li>`).join('')}</ul>`;
 }
 
 function getTheoryContent(title) {

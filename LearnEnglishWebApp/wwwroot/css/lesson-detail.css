@@ -14,150 +14,139 @@
     box-sizing: border-box;
 }
 
-.lesson-container {
+.carousel-container {
     background: white;
-    border-radius: 16px;
-    box-shadow: 0 5px 20px rgba(0, 35, 70, 0.08);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 35, 70, 0.1);
     overflow: hidden;
 }
 
-.lesson-header {
+.carousel-header {
+    padding: 20px 30px;
     background: linear-gradient(135deg, #1a3b5d 0%, #2c5a7a 100%);
-    padding: 40px;
     color: white;
 }
 
-.lesson-header h1 {
-    font-size: 2rem;
-    margin: 0 0 10px 0;
-    font-weight: 600;
+.progress-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 15px;
 }
 
-.lesson-level {
-    display: inline-block;
+.progress-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
     background: rgba(255, 255, 255, 0.2);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
-.lesson-body {
-    padding: 40px;
-}
+    .progress-dot.active {
+        background: #ff9800;
+        transform: scale(1.1);
+    }
 
-.theory-section {
-    margin-bottom: 40px;
-}
+    .progress-dot.completed {
+        background: #4caf50;
+    }
 
-.theory-section h2 {
-    color: #1a3b5d;
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #eef2f6;
-}
+    .progress-dot:hover {
+        transform: scale(1.05);
+    }
 
-.theory-content {
-    color: #4a5568;
-    line-height: 1.8;
+.dot-icon {
     font-size: 1rem;
+    font-weight: bold;
 }
 
-.theory-content p {
-    margin-bottom: 15px;
+.section-title {
+    text-align: center;
 }
 
-.theory-content h3 {
-    color: #1a3b5d;
-    margin: 20px 0 10px 0;
+    .section-title h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
+
+.carousel-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 30px;
+    min-height: 500px;
 }
 
-.theory-content ul,
-.theory-content ol {
-    margin: 10px 0 20px 20px;
+.carousel-nav {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #f0f2f5;
+    border: 1px solid #e0e5ec;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+    flex-shrink: 0;
 }
 
-.theory-content li {
-    margin: 5px 0;
-}
+    .carousel-nav:hover:not(:disabled) {
+        background: #1a3b5d;
+        color: white;
+        border-color: #1a3b5d;
+    }
 
-.examples-section {
+    .carousel-nav:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+.section-card {
+    flex: 1;
     background: #f8fafd;
-    padding: 25px;
-    border-radius: 12px;
-    margin-bottom: 40px;
+    border-radius: 16px;
+    padding: 30px;
+    min-height: 400px;
+    overflow-y: auto;
 }
 
-.examples-section h2 {
+.section-content {
+    line-height: 1.6;
     color: #1a3b5d;
-    font-size: 1.3rem;
-    margin-bottom: 15px;
 }
+
+    .section-content h3 {
+        color: #1a3b5d;
+        margin: 20px 0 10px 0;
+    }
+
+    .section-content ul,
+    .section-content ol {
+        margin: 10px 0 20px 20px;
+    }
+
+    .section-content li {
+        margin: 5px 0;
+    }
 
 .examples-list {
     list-style: none;
     padding: 0;
 }
 
-.examples-list li {
-    padding: 10px 0;
-    border-bottom: 1px solid #eef2f6;
-    color: #4a5568;
-    font-style: italic;
-}
+    .examples-list li {
+        padding: 12px;
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border-left: 3px solid #ff9800;
+    }
 
-.examples-list li:last-child {
-    border-bottom: none;
-}
-
-/* Футер урока */
-.lesson-footer {
-    border-top: 1px solid #eef2f6;
-    padding: 30px 40px;
-    background: #f8fafd;
-}
-
-/* Кнопки */
-.btn-complete {
-    width: 100%;
-    padding: 14px;
-    background: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.3s;
-    margin-bottom: 20px;
-}
-
-.btn-complete:hover {
-    background: #43a047;
-}
-
-.completed-message {
-    text-align: center;
-    padding: 14px;
-    background: #e8f5e9;
-    color: #2e7d32;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-weight: 500;
-}
-
-/* Доступные тесты */
-.available-tests {
-    margin-top: 20px;
-}
-
-.available-tests h3 {
-    color: #1a3b5d;
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-}
-
+/* Тесты */
 .tests-list {
     display: flex;
     flex-direction: column;
@@ -166,19 +155,19 @@
 
 .test-card {
     background: white;
-    border: 1px solid #eef2f6;
     border-radius: 12px;
     padding: 15px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border: 1px solid #eef2f6;
     transition: all 0.3s;
 }
 
-.test-card:hover {
-    border-color: #1a3b5d;
-    box-shadow: 0 2px 8px rgba(0, 35, 70, 0.05);
-}
+    .test-card:hover {
+        border-color: #ff9800;
+        box-shadow: 0 2px 8px rgba(0, 35, 70, 0.05);
+    }
 
 .test-info {
     flex: 1;
@@ -207,11 +196,78 @@
     transition: background 0.3s;
 }
 
-.btn-test:hover {
-    background: #f57c00;
+    .btn-test:hover {
+        background: #f57c00;
+    }
+
+.no-tests {
+    text-align: center;
+    color: #6b7a8f;
+    padding: 40px;
 }
 
-/* Состояния */
+.complete-section,
+.completed-section {
+    text-align: center;
+    padding: 20px;
+}
+
+.btn-complete {
+    padding: 14px 30px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 20px;
+}
+
+    .btn-complete:hover {
+        background: #43a047;
+    }
+
+.completed-message {
+    font-size: 1.2rem;
+    color: #4caf50;
+    margin-bottom: 15px;
+}
+
+.carousel-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: #f8fafd;
+    border-top: 1px solid #eef2f6;
+}
+
+.lesson-info {
+    display: flex;
+    gap: 15px;
+}
+
+.lesson-level,
+.lesson-type {
+    padding: 4px 12px;
+    background: white;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: #1a3b5d;
+    border: 1px solid #e0e5ec;
+}
+
+.lesson-type {
+    background: #fff3e0;
+    border-color: #ff9800;
+}
+
+.carousel-pagination {
+    font-size: 0.85rem;
+    color: #6b7a8f;
+}
+
 .loading {
     text-align: center;
     padding: 60px;
@@ -237,29 +293,93 @@
         padding: 20px;
     }
 
-    .lesson-header {
-        padding: 25px;
+    .carousel-header {
+        padding: 15px 20px;
     }
 
-    .lesson-header h1 {
-        font-size: 1.5rem;
+    .progress-indicator {
+        gap: 15px;
     }
 
-    .lesson-body {
-        padding: 25px;
+    .progress-dot {
+        width: 30px;
+        height: 30px;
     }
 
-    .lesson-footer {
-        padding: 25px;
+    .dot-icon {
+        font-size: 0.8rem;
+    }
+
+    .section-title h2 {
+        font-size: 1.2rem;
+    }
+
+    .carousel-content {
+        padding: 20px;
+        gap: 10px;
+        min-height: 400px;
+    }
+
+    .carousel-nav {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+
+    .section-card {
+        padding: 20px;
+        min-height: 350px;
     }
 
     .test-card {
         flex-direction: column;
-        gap: 10px;
         text-align: center;
+        gap: 10px;
     }
 
     .btn-test {
         width: 100%;
     }
+
+    .carousel-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .lesson-info {
+        justify-content: center;
+    }
 }
+
+.carousel-nav {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #f0f2f5;
+    border: 1px solid #e0e5ec;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .carousel-nav i {
+        font-size: 1.2rem;
+        color: #1a3b5d;
+    }
+
+    .carousel-nav:hover:not(:disabled) {
+        background: #1a3b5d;
+        border-color: #1a3b5d;
+    }
+
+        .carousel-nav:hover:not(:disabled) i {
+            color: white;
+        }
+
+    .carousel-nav:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
