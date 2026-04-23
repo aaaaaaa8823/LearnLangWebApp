@@ -1,4 +1,6 @@
-﻿.main-with-sidebar {
+﻿/* lesson-detail.css - стили для страницы урока с каруселью */
+
+.main-with-sidebar {
     margin-left: 250px;
     min-height: 100vh;
     background: #f8fafd;
@@ -14,6 +16,7 @@
     box-sizing: border-box;
 }
 
+/* Карусель */
 .carousel-container {
     background: white;
     border-radius: 20px;
@@ -21,12 +24,14 @@
     overflow: hidden;
 }
 
+/* Шапка карусели */
 .carousel-header {
     padding: 20px 30px;
     background: linear-gradient(135deg, #1a3b5d 0%, #2c5a7a 100%);
     color: white;
 }
 
+/* Индикатор прогресса */
 .progress-indicator {
     display: flex;
     justify-content: center;
@@ -35,8 +40,8 @@
 }
 
 .progress-dot {
-    width: 20px;
-    height: 20px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.2);
     display: flex;
@@ -74,6 +79,7 @@
         font-weight: 500;
     }
 
+/* Контент карусели */
 .carousel-content {
     display: flex;
     align-items: center;
@@ -82,6 +88,7 @@
     min-height: 500px;
 }
 
+/* Кнопки навигации */
 .carousel-nav {
     width: 45px;
     height: 45px;
@@ -105,6 +112,7 @@
         cursor: not-allowed;
     }
 
+/* Карточка с контентом */
 .section-card {
     flex: 1;
     background: #f8fafd;
@@ -133,6 +141,7 @@
         margin: 5px 0;
     }
 
+/* Примеры */
 .examples-list {
     list-style: none;
     padding: 0;
@@ -206,6 +215,7 @@
     padding: 40px;
 }
 
+/* Завершение урока */
 .complete-section,
 .completed-section {
     text-align: center;
@@ -234,6 +244,7 @@
     margin-bottom: 15px;
 }
 
+/* Футер карусели */
 .carousel-footer {
     display: flex;
     justify-content: space-between;
@@ -268,6 +279,7 @@
     color: #6b7a8f;
 }
 
+/* Состояния */
 .loading {
     text-align: center;
     padding: 60px;
