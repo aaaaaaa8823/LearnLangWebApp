@@ -7,6 +7,7 @@
         public string TopicTitle {  get; set; }
         public string Level {  get; set; }
         public int QuestionCount { get; set; }
+        public int OrderIndex { get; set; }
         public int PassingScore {  get; set; }
         public int TimeLimitMinutes { get; set; }
         public bool IsActive { get; set; }
