@@ -13,12 +13,15 @@ namespace LearnEnglishWebApp.Controllers
     {
         private readonly IGrammarTopicService _grammarTopicService;
         private readonly IUserLessonService _userLessonService;
+        private readonly IGrammarTestService _grammarTestService;
 
         public GrammarController(IGrammarTopicService grammarTopicService,
-                                 IUserLessonService userLessonService)  
+                                 IUserLessonService userLessonService,
+                                 IGrammarTestService grammarTestService)  
         {
             _grammarTopicService = grammarTopicService;
             _userLessonService = userLessonService;
+            _grammarTestService = grammarTestService;
         }
 
         [HttpGet("topics")]
@@ -137,6 +140,63 @@ namespace LearnEnglishWebApp.Controllers
 
                 var result = await _userLessonService.RemoveSavedLessonAsync(userId, id, "grammar");
                 return Ok(new { success = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("tests")]
+        public async Task<IActionResult> GetAllTests()
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null || !long.TryParse(userIdClaim, out long userId))
+                    return Unauthorized();
+
+                var tests = await _grammarTestService.GetAllTestAsync(userId);
+                return Ok(tests);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("test/{id}")]
+        public async Task<IActionResult> GetTestById(long id)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null || !long.TryParse(userIdClaim, out long userId))
+                    return Unauthorized();
+
+                var test = await _grammarTestService.GetTestByIdAsync(userId, id);
+                if (test == null)
+                    return NotFound(new { message = "Тест не найден" });
+
+                return Ok(test);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("tests/level/{level}")]
+        public async Task<IActionResult> GetTestsByLevel(string level)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null || !long.TryParse(userIdClaim, out long userId))
+                    return Unauthorized();
+
+                var tests = await _grammarTestService.GetTestsByLevelAsync(userId, level);
+                return Ok(tests);
             }
             catch (Exception ex)
             {
