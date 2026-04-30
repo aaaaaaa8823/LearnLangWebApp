@@ -6,8 +6,20 @@
 <div class="tests-page">
     <h1>Тесты по английскому</h1>
 
+    <div class="search-wrapper">
+        <input type="text"
+               class="search-input"
+               id="testSearch"
+               placeholder="Поиск теста..."
+               aria-label="Поиск по тестам" />
+    </div>
+
     <div class="tests-grid" id="testsContainer">
         <div class="loading">Загрузка тестов...</div>
     </div>
 </div>
 
+@section Scripts {
+    <link rel="stylesheet" href="~/css/tests.css" asp-append-version="true" />
+    <script src="~/js/tests.js" asp-append-version="true"></script>
+}

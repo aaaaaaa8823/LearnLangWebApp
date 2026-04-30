@@ -68,6 +68,27 @@
     font-size: 0.75rem;
     font-weight: 500;
 }
+.test-type.grammar {
+    background: #1a3b5d;
+    color: white;
+}
+
+.test-type.vocab {
+    background: #ff9800;
+    color: white;
+}
+
+.completed-badge {
+    background: #4caf50;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+}
+
+.test-body {
+    margin-bottom: 15px;
+}
 
 .completed-badge {
     background: #4caf50;
@@ -98,6 +119,25 @@
     margin-top: 15px;
     padding-top: 15px;
     border-top: 1px solid #eef2f6;
+}
+
+.test-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 0.75rem;
+    color: #6b7a8f;
+}
+
+.attempts {
+    color: #1a3b5d;
+}
+
+.best-score {
+    color: #4caf50;
+}
+
+.not-started {
+    color: #ff9800;
 }
 
 .search-wrapper {
@@ -142,6 +182,27 @@
     color: #6b7a8f;
     background: white;
     border-radius: 12px;
+}
+
+.btn-start {
+    padding: 6px 16px;
+    background: #ff9800;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background 0.3s;
+}
+
+.btn-start:hover {
+    background: #f57c00;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #6b7a8f;
 }
 
 /* Адаптивность */
