@@ -64,15 +64,11 @@ function displaySavedLessons(lessons) {
     }
 
     container.innerHTML = lessons.map(lesson => {
-        const typeBadge = lesson.lessonType === 'vocab'
-            ? '<span class="saved-type vocab">Вокабуляр</span>'
-            : '<span class="saved-type grammar">Грамматика</span>';
 
         return `
             <div class="saved-card" data-lesson-id="${lesson.lessonId}" data-lesson-type="${lesson.lessonType}">
                 <div class="saved-header">
                     <span class="saved-level">${escapeHtml(lesson.level)}</span>
-                    ${typeBadge}
                     <span class="saved-date">Сохранено: ${new Date(lesson.savedAt).toLocaleDateString()}</span>
                 </div>
                 <div class="saved-title">${escapeHtml(lesson.title)}</div>

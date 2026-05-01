@@ -1,6 +1,4 @@
-﻿/* lesson-detail.css - стили для страницы урока с каруселью */
-
-.main-with-sidebar {
+﻿.main-with-sidebar {
     margin-left: 250px;
     min-height: 100vh;
     background: #f8fafd;
@@ -16,7 +14,6 @@
     box-sizing: border-box;
 }
 
-/* Карусель */
 .carousel-container {
     background: white;
     border-radius: 20px;
@@ -24,14 +21,12 @@
     overflow: hidden;
 }
 
-/* Шапка карусели */
 .carousel-header {
     padding: 20px 30px;
     background: linear-gradient(135deg, #1a3b5d 0%, #2c5a7a 100%);
     color: white;
 }
 
-/* Индикатор прогресса */
 .progress-indicator {
     display: flex;
     justify-content: center;
@@ -51,18 +46,18 @@
     transition: all 0.3s;
 }
 
-    .progress-dot.active {
-        background: #ff9800;
-        transform: scale(1.1);
-    }
+.progress-dot.active {
+    background: #ff9800;
+    transform: scale(1.1);
+}
 
-    .progress-dot.completed {
-        background: #4caf50;
-    }
+.progress-dot.completed {
+    background: #4caf50;
+}
 
-    .progress-dot:hover {
-        transform: scale(1.05);
-    }
+.progress-dot:hover {
+    transform: scale(1.05);
+}
 
 .dot-icon {
     font-size: 1rem;
@@ -73,13 +68,12 @@
     text-align: center;
 }
 
-    .section-title h2 {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 500;
-    }
+.section-title h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
 
-/* Контент карусели */
 .carousel-content {
     display: flex;
     align-items: center;
@@ -88,7 +82,6 @@
     min-height: 500px;
 }
 
-/* Кнопки навигации */
 .carousel-nav {
     width: 45px;
     height: 45px;
@@ -101,18 +94,17 @@
     flex-shrink: 0;
 }
 
-    .carousel-nav:hover:not(:disabled) {
-        background: #1a3b5d;
-        color: white;
-        border-color: #1a3b5d;
-    }
+.carousel-nav:hover:not(:disabled) {
+    background: #1a3b5d;
+    color: white;
+    border-color: #1a3b5d;
+}
 
-    .carousel-nav:disabled {
-        opacity: 0.3;
-        cursor: not-allowed;
-    }
+.carousel-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
 
-/* Карточка с контентом */
 .section-card {
     flex: 1;
     background: #f8fafd;
@@ -127,32 +119,32 @@
     color: #1a3b5d;
 }
 
-    .section-content h3 {
-        color: #1a3b5d;
-        margin: 20px 0 10px 0;
-    }
+.section-content h3 {
+    color: #1a3b5d;
+    margin: 20px 0 10px 0;
+}
 
-    .section-content ul,
-    .section-content ol {
-        margin: 10px 0 20px 20px;
-    }
+.section-content ul,
+.section-content ol {
+    margin: 10px 0 20px 20px;
+}
 
-    .section-content li {
-        margin: 5px 0;
-    }
+.section-content li {
+    margin: 5px 0;
+}
 
 .examples-list {
     list-style: none;
     padding: 0;
 }
 
-    .examples-list li {
-        padding: 12px;
-        background: white;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        border-left: 3px solid #ff9800;
-    }
+.examples-list li {
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 3px solid #ff9800;
+}
 
 
 .tests-list {
@@ -172,10 +164,10 @@
     transition: all 0.3s;
 }
 
-    .test-card:hover {
-        border-color: #ff9800;
-        box-shadow: 0 2px 8px rgba(0, 35, 70, 0.05);
-    }
+.test-card:hover {
+    border-color: #ff9800;
+    box-shadow: 0 2px 8px rgba(0, 35, 70, 0.05);
+}
 
 .test-info {
     flex: 1;
@@ -204,9 +196,9 @@
     transition: background 0.3s;
 }
 
-    .btn-test:hover {
-        background: #f57c00;
-    }
+.btn-test:hover {
+    background: #f57c00;
+}
 
 .no-tests {
     text-align: center;
@@ -233,9 +225,9 @@
     margin-top: 20px;
 }
 
-    .btn-complete:hover {
-        background: #43a047;
-    }
+.btn-complete:hover {
+    background: #43a047;
+}
 
 .completed-message {
     font-size: 1.2rem;
@@ -291,7 +283,6 @@
     border-radius: 12px;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .main-with-sidebar {
         margin-left: 0;
@@ -374,21 +365,21 @@
     justify-content: center;
 }
 
-    .carousel-nav i {
-        font-size: 1.2rem;
-        color: #1a3b5d;
-    }
+.carousel-nav i {
+    font-size: 1.2rem;
+    color: #1a3b5d;
+}
 
-    .carousel-nav:hover:not(:disabled) {
-        background: #1a3b5d;
-        border-color: #1a3b5d;
-    }
+.carousel-nav:hover:not(:disabled) {
+    background: #1a3b5d;
+    border-color: #1a3b5d;
+}
 
-        .carousel-nav:hover:not(:disabled) i {
-            color: white;
-        }
+.carousel-nav:hover:not(:disabled) i {
+    color: white;
+}
 
-    .carousel-nav:disabled {
-        opacity: 0.3;
-        cursor: not-allowed;
-    }
+.carousel-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}

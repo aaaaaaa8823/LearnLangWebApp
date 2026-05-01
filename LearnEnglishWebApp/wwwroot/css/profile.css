@@ -23,7 +23,6 @@
     font-weight: 500;
 }
 
-/* Списки тестов и уроков */
 .tests-list {
     background: white;
     padding: 20px;
@@ -41,7 +40,6 @@
     border-bottom: 1px solid #eef2f6;
 }
 
-/* Бейджи статусов */
 .status-badge {
     padding: 4px 12px;
     border-radius: 4px;
@@ -60,17 +58,16 @@
     color: white;
 }
 
-/* Информация об аккаунте */
-.account-info {
+/*.account-info {
     background: white;
     padding: 25px;
     border: 1px solid #eef2f6;
     border-radius: 8px;
     width: 100%;
     box-sizing: border-box;
-}
+}*/
 
-    .account-info p {
+/*    .account-info p {
         margin-bottom: 15px;
         color: #1a3b5d;
     }
@@ -79,19 +76,19 @@
         display: inline-block;
         width: 150px;
         color: #6b7a8f;
-    }
+    }*/
 
-/* Формы */
+
 .form-group {
     margin-bottom: 20px;
 }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 500;
-        color: #1a3b5d;
-    }
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #1a3b5d;
+}
 
 .form-input,
 .form-select {
@@ -104,11 +101,11 @@
     box-sizing: border-box;
 }
 
-    .form-input:focus,
-    .form-select:focus {
-        outline: none;
-        border-color: #1a3b5d;
-    }
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #1a3b5d;
+}
 
 .form-divider {
     margin: 25px 0 20px;
@@ -116,12 +113,12 @@
     border-top: 1px solid #eee;
 }
 
-    .form-divider h3 {
-        color: #1a3b5d;
-        font-size: 1rem;
-        margin: 0;
-        font-weight: 500;
-    }
+.form-divider h3 {
+    color: #1a3b5d;
+    font-size: 1rem;
+    margin: 0;
+    font-weight: 500;
+}
 
 .form-actions {
     display: flex;
@@ -129,7 +126,6 @@
     margin-top: 30px;
 }
 
-/* Кнопки */
 .btn-primary {
     padding: 12px 24px;
     background: #1a3b5d;
@@ -141,9 +137,9 @@
     transition: background 0.3s;
 }
 
-    .btn-primary:hover {
-        background: #0f2b44;
-    }
+.btn-primary:hover {
+    background: #0f2b44;
+}
 
 .btn-secondary {
     padding: 12px 24px;
@@ -156,11 +152,11 @@
     transition: all 0.3s;
 }
 
-    .btn-secondary:hover {
-        background: #e4e8ef;
-    }
+.btn-secondary:hover {
+    background: #e4e8ef;
+}
 
-/* Сообщения форм */
+
 .form-message {
     padding: 10px;
     border-radius: 4px;
@@ -168,19 +164,18 @@
     font-size: 0.9rem;
 }
 
-    .form-message.success {
-        background: #e8f5e9;
-        color: #2e7d32;
-        border: 1px solid #c8e6c9;
-    }
+.form-message.success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
 
-    .form-message.error {
-        background: #ffebee;
-        color: #c62828;
-        border: 1px solid #ffcdd2;
-    }
+.form-message.error {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
 
-/* Состояния загрузки и ошибок */
 .loading {
     text-align: center;
     padding: 40px;
@@ -196,7 +191,6 @@
     border-radius: 8px;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .main-with-sidebar {
         margin-left: 0;

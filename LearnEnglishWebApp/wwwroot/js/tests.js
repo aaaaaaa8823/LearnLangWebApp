@@ -66,7 +66,7 @@ function displayTests(tests) {
                             <span class="attempts">Попыток: ${test.attemptCount}</span>
                             ${test.bestPercentage ? `<span class="best-score">Лучший: ${Math.round(test.bestPercentage)}%</span>` : ''}
                         ` : `
-                            <span class="not-started">Еще не начат</span>
+                            <span>Еще не начат</span>
                         `}
                     </div>
                     <button class="btn-start" onclick="event.stopPropagation(); startTest(${test.id})">

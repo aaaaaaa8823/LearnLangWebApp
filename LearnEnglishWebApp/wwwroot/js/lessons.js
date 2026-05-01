@@ -113,10 +113,6 @@ function displayLessons(lessons) {
     }
 
     container.innerHTML = lessons.map(lesson => {
-        const typeBadge = lesson.type === 'vocab'
-            ? '<span class="lesson-type vocab">Вокабуляр</span>'
-            : '<span class="lesson-type grammar">Грамматика</span>';
-
         let buttonHtml = '';
 
         if (lesson.isSaved) {
@@ -129,7 +125,6 @@ function displayLessons(lessons) {
             <div class="lesson-card" onclick="goToLesson(${lesson.id}, '${lesson.type}')">
                 <div class="lesson-header">
                     <span class="lesson-level">${escapeHtml(lesson.level)}</span>
-                    ${typeBadge}
                     ${lesson.isCompleted ? '<span class="completed-badge">Пройдено</span>' : ''}
                 </div>
                 <div class="lesson-body">

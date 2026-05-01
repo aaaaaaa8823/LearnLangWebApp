@@ -1,6 +1,4 @@
-﻿
-
-.main-with-sidebar {
+﻿.main-with-sidebar {
     margin-left: 250px;
     min-height: 100vh;
     background: #f8fafd;
@@ -31,7 +29,6 @@
     box-sizing: border-box;
 }
 
-/* Карточка урока - базовая */
 .lesson-card {
     background: white;
     border: 1px solid #eef2f6;
@@ -47,18 +44,7 @@
     border-color: #1a3b5d;
 }
 
-/* Сохраненные уроки - белая карточка с оранжевой левой границей */
-.lesson-card.saved {
-    border-left: 4px solid #ff9800;
-}
 
-/* Пройденные - зеленая карточка */
-.lesson-card.completed {
-    background: #e8f5e9;
-    border-left: 4px solid #4caf50;
-}
-
-/* Шапка карточки */
 .lesson-header {
     display: flex;
     justify-content: space-between;
@@ -75,7 +61,6 @@
     font-weight: 500;
 }
 
-/* Бейджи */
 .completed-badge {
     background: #4caf50;
     color: white;
@@ -85,7 +70,6 @@
 }
 
 
-/* Тело карточки */
 .lesson-title {
     font-size: 1.2rem;
     font-weight: 600;
@@ -100,7 +84,6 @@
     margin-bottom: 15px;
 }
 
-/* Футер карточки */
 .lesson-footer {
     display: flex;
     justify-content: space-between;
@@ -127,18 +110,18 @@
     transition: all 0.3s;
 }
 
-    .btn-add:hover {
-        background: #f57c00;
-        transform: scale(1.02);
-    }
+.btn-add:hover {
+    background: #f57c00;
+    transform: scale(1.02);
+}
 
-    .btn-add.saved {
-        background: #4caf50;
-    }
+.btn-add.saved {
+    background: #4caf50;
+}
 
-        .btn-add.saved:hover {
-            background: #43a047;
-        }
+.btn-add.saved:hover {
+    background: #43a047;
+}
 
 .btn-remove {
     padding: 8px 16px;
@@ -151,9 +134,9 @@
     transition: all 0.3s;
 }
 
-    .btn-remove:hover {
-        background: #d32f2f;
-    }
+.btn-remove:hover {
+    background: #d32f2f;
+}
 
 .btn-remove {
     padding: 8px 16px;
@@ -166,9 +149,9 @@
     transition: all 0.3s;
 }
 
-    .btn-remove:hover {
-        background: #d32f2f;
-    }
+.btn-remove:hover {
+    background: #d32f2f;
+}
 
 .search-wrapper {
     margin-bottom: 25px;
@@ -184,10 +167,10 @@
     box-sizing: border-box;
 }
 
-    .search-input:focus {
-        outline: none;
-        border-color: #1a3b5d;
-    }
+.search-input:focus {
+    outline: none;
+    border-color: #1a3b5d;
+}
 
 
 /* Состояния */
@@ -214,7 +197,6 @@
     border-radius: 12px;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .main-with-sidebar {
         margin-left: 0;
@@ -234,22 +216,5 @@
     }
 }
 
-.lesson-type {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: 500;
-    margin-left: 8px;
-}
 
-    .lesson-type.grammar {
-        background: #1a3b5d;
-        color: white;
-    }
-
-    .lesson-type.vocab {
-        background: #ff9800;
-        color: white;
-    }
 

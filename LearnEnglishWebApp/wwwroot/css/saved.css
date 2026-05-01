@@ -1,6 +1,4 @@
-﻿/* saved.css */
-
-.main-with-sidebar {
+﻿.main-with-sidebar {
     margin-left: 250px;
     min-height: 100vh;
     background: #f8fafd;
@@ -16,12 +14,12 @@
     box-sizing: border-box;
 }
 
-    .saved-page h1 {
-        color: #1a3b5d;
-        margin-bottom: 30px;
-        font-size: 2rem;
-        font-weight: 500;
-    }
+.saved-page h1 {
+    color: #1a3b5d;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    font-weight: 500;
+}
 
 .search-wrapper {
     margin-bottom: 25px;
@@ -37,10 +35,10 @@
     box-sizing: border-box;
 }
 
-    .search-input:focus {
-        outline: none;
-        border-color: #1a3b5d;
-    }
+.search-input:focus {
+    outline: none;
+    border-color: #1a3b5d;
+}
 
 .saved-grid {
     display: grid;
@@ -53,16 +51,15 @@
 .saved-card {
     background: white;
     border: 1px solid #eef2f6;
-    border-left: 4px solid #ff9800;
     border-radius: 12px;
     padding: 20px;
     transition: all 0.3s;
 }
 
-    .saved-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 35, 70, 0.08);
-    }
+.saved-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 35, 70, 0.08);
+}
 
 .saved-header {
     display: flex;
@@ -119,9 +116,9 @@
     transition: background 0.3s;
 }
 
-    .btn-study:hover {
-        background: #0f2b44;
-    }
+.btn-study:hover {
+    background: #0f2b44;
+}
 
 .btn-remove {
     padding: 8px 16px;
@@ -134,9 +131,9 @@
     transition: background 0.3s;
 }
 
-    .btn-remove:hover {
-        background: #d32f2f;
-    }
+.btn-remove:hover {
+    background: #d32f2f;
+}
 
 .loading {
     text-align: center;
@@ -176,18 +173,16 @@
     }
 }
 
-/* Добавь в saved.css */
-
-.saved-type {
+/*.saved-type {
     display: inline-block;
     padding: 2px 8px;
     border-radius: 12px;
     font-size: 0.7rem;
     font-weight: 500;
     margin-left: 8px;
-}
+}*/
 
-    .saved-type.grammar {
+/*    .saved-type.grammar {
         background: #1a3b5d;
         color: white;
     }
@@ -195,13 +190,13 @@
     .saved-type.vocab {
         background: #ff9800;
         color: white;
-    }
+    }*/
 
-.saved-header {
+/*.saved-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
     flex-wrap: wrap;
     gap: 8px;
-}
+}*/
