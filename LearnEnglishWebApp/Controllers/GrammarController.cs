@@ -1,4 +1,5 @@
-﻿using LearnEnglishWebApp.Services.Implementations;
+﻿using LearnEnglishWebApp.DTOs.Response;
+using LearnEnglishWebApp.Services.Implementations;
 using LearnEnglishWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -197,6 +198,24 @@ namespace LearnEnglishWebApp.Controllers
 
                 var tests = await _grammarTestService.GetTestsByLevelAsync(userId, level);
                 return Ok(tests);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("submit")]
+        public async Task<IActionResult> SubmitTestResult([FromBody] SubmitTestResultDto result)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null || !long.TryParse(userIdClaim, out long userId))
+                    return Unauthorized();
+
+                var testResult = await _grammarTestService.SubmitTestResultAsync(userId, result);
+                return Ok(testResult);
             }
             catch (Exception ex)
             {

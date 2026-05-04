@@ -1,1 +1,16 @@
-﻿
+﻿@{
+    ViewData["Title"] = "Тест";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="test-detail-page">
+    <div id="testContainer">
+        <div class="loading">Загрузка теста...</div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="~/css/test-detail.css" asp-append-version="true" />
+    <script src="~/js/test-detail.js" asp-append-version="true"></script>
+}
+
