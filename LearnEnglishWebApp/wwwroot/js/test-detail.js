@@ -1,9 +1,10 @@
 ﻿let currentTest = null;
 let currentQuestionIndex = 0;
-let userAnswer = [];
+let userAnswers = [];
 let startTime = null;
-let timeInterval = null;
+let timerInterval = null;
 let timeSpent = 0;
+let currentRemainingSeconds = 0;
 
 async function loadTest() {
     const container = document.getElementById('testContainer');
@@ -13,7 +14,7 @@ async function loadTest() {
     const testType = urlParams.get('type') || 'grammar';
 
     if (!testId) {
-        container.innerHTML = '<div class="error">ID теста не указан</div>';
+        console.log('ID теста не указан');
         return;
     }
 
@@ -37,6 +38,7 @@ async function loadTest() {
         }
 
         currentTest = await response.json();
+        currentRemainingSeconds = currentTest.timeLimitMinutes * 60;
         startTime = Date.now();
         startTimer();
         displayQuestion();
@@ -48,14 +50,15 @@ async function loadTest() {
 }
 
 function startTimer() {
-    if(timeInterval) clearInterval(timeInterval);
+    if (timerInterval) clearInterval(timerInterval);
 
     timerInterval = setInterval(() => {
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
-        const remaining = Math.max(0, (currentTest.timeLimitMinutes * 60) - elapsed);
-        updateTimerDisplay(remaining);
+        currentRemainingSeconds = Math.max(0, (currentTest.timeLimitMinutes * 60) - elapsed);
 
-        if (remaining <= 0) {
+        updateTimerDisplay(currentRemainingSeconds);
+
+        if (currentRemainingSeconds <= 0) {
             clearInterval(timerInterval);
             submitTest();
         }
@@ -89,6 +92,8 @@ function displayQuestion() {
     const totalQuestions = currentTest.questions.length;
     const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
+    const currentTimeDisplay = formatTime(currentRemainingSeconds);
+
     container.innerHTML = `
         <div class="test-container">
             <div class="test-header">
@@ -101,7 +106,7 @@ function displayQuestion() {
                 </div>
                 <div class="timer-section">
                     <div class="timer-label">Осталось времени:</div>
-                    <div class="timer-value" id="timerDisplay">${formatTime(currentTest.timeLimitMinutes * 60)}</div>
+                    <div class="timer-value" id="timerDisplay">${currentTimeDisplay}</div>
                 </div>
             </div>
             
@@ -116,9 +121,9 @@ function displayQuestion() {
                     ${question.options.map((option, idx) => `
                         <div class="option-item" onclick="selectOption(${idx})">
                             <div class="option-radio" id="option_${idx}">
-                                ${userAnswer[currentQuestionIndex]?.selectedOption === idx
-                            ? '<i class="fas fa-dot-circle" style="color: #ff9800;"></i>'
-                            : '<i class="far fa-circle"></i>'}
+                                ${userAnswers[currentQuestionIndex]?.selectedOption === idx
+            ? '<i class="fas fa-dot-circle" style="color: #ff9800;"></i>'
+            : '<i class="far fa-circle"></i>'}
                             </div>
                             <div class="option-text">${escapeHtml(option)}</div>
                         </div>
@@ -138,6 +143,22 @@ function displayQuestion() {
     `;
 }
 
+function skipQuestion() {
+    if (!userAnswers[currentQuestionIndex]) {
+        userAnswers[currentQuestionIndex] = {};
+    }
+    userAnswers[currentQuestionIndex].selectedOption = undefined;
+
+    if (currentQuestionIndex < currentTest.questions.length - 1) {
+        currentQuestionIndex++;
+        displayQuestion();
+    } else {
+        if (confirm('Вы пропустили последний вопрос. Завершить тест?')) {
+            submitTest();
+        }
+    }
+}
+
 function selectOption(optionIndex) {
     if (!userAnswers[currentQuestionIndex]) {
         userAnswers[currentQuestionIndex] = {};
@@ -154,10 +175,12 @@ function prevQuestion() {
 }
 
 function nextQuestion() {
-    if (!userAnswer[currentQuestionIndex] || userAnswer[currentQuestionIndex].selectedOption === indefined) {
-        alert('Пожалуйста, выберите ответ');
-        return;
+    const hasAnswer = userAnswers[currentQuestionIndex] && userAnswers[currentQuestionIndex].selectedOption !== undefined;
+
+    if (!userAnswers[currentQuestionIndex]) {
+        userAnswers[currentQuestionIndex] = {};
     }
+    userAnswers[currentQuestionIndex].selectedOption = undefined;
 
     if (currentQuestionIndex < currentTest.questions.length - 1) {
         currentQuestionIndex++;
@@ -169,7 +192,7 @@ function nextQuestion() {
     }
 }
 
-async function submitTest(){
+async function submitTest() {
     clearInterval(timerInterval);
 
     const timeSpentSeconds = Math.floor((Date.now() - startTime) / 1000);
@@ -177,9 +200,10 @@ async function submitTest(){
     let totalScore = 0;
     let maxScore = 0;
 
-    const answer = currentTest.question.map((question, idx => {
+    const answers = currentTest.questions.map((question, idx) => {
         const userAnswer = userAnswers[idx];
-        const isCorrect = userAnswer && userAnswer.selectedOption === question.correctOption;
+        const isCorrect = userAnswer && userAnswer.selectedOption !== undefined &&
+            userAnswer.selectedOption === question.correctOption;
         const pointsEarned = isCorrect ? question.points : 0;
 
         if (isCorrect) correctCount++;
@@ -188,13 +212,15 @@ async function submitTest(){
 
         return {
             questionId: question.id,
-            userAnswer: userAnswer ? question.options[userAnswer.selectedOption] : '',
+            userAnswer: userAnswer && userAnswer.selectedOption !== undefined
+                ? question.options[userAnswer.selectedOption]
+                : 'Пропущен',
             correctAnswer: question.options[question.correctOption],
             isCorrect: isCorrect,
             pointsEarned: pointsEarned,
             maxPoints: question.points
         };
-    }))
+    });
 
     const percentage = (totalScore / maxScore) * 100;
     const isPassed = percentage >= currentTest.passingScore;
@@ -276,7 +302,7 @@ function showResult(result) {
                         <div class="answer-item ${answer.isCorrect ? 'correct' : 'incorrect'}">
                             <div class="answer-header">
                                 <span class="question-num">Вопрос ${idx + 1}</span>
-                                <span class="answer-status">${answer.isCorrect ? '✓ Правильно' : '✗ Неправильно'}</span>
+                                <span class="answer-status">${answer.isCorrect ? 'Правильно' : 'Неправильно'}</span>
                                 <span class="answer-points">${answer.pointsEarned}/${answer.maxPoints} баллов</span>
                             </div>
                             <div class="answer-details">
