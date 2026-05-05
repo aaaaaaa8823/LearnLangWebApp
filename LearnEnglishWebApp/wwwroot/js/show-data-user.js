@@ -23,6 +23,24 @@ function redirectAdmin(){
     }
     return false;
 }
+
+function toggleMenuByRole() {
+    const userRole = localStorage.getItem('userRole');
+    const userMenu = document.getElementById('userMenu');
+    const adminMenu = document.getElementById('adminMenu');
+
+    console.log('toggleMenuByRole - userRole:', userRole);
+
+    if (userRole === 'Administrator') {
+        if (userMenu) userMenu.style.display = 'none';
+        if (adminMenu) adminMenu.style.display = 'block';
+    } else {
+        if (userMenu) userMenu.style.display = 'block';
+        if (adminMenu) adminMenu.style.display = 'none';
+    }
+}
+
+
 async function loadSidebarUser() {
     const userNameElement = document.getElementById('userName');
     const userInitialsElement = document.getElementById('userInitials');
@@ -59,15 +77,7 @@ async function loadSidebarUser() {
         userInitialsElement.textContent = (user.userName || user.username)[0].toUpperCase();
         userLevelElement.textContent = user.level || 'A1';
 
-        const adminNavItem = document.getElementById('adminNavItem');
-        if (adminNavItem) {
-            const userRole = user.role || localStorage.getItem('userRole');
-            if (userRole === 'Administrator') {
-                adminNavItem.style.display = 'block';
-            } else {
-                adminNavItem.style.display = 'none';
-            }
-        }
+        toggleMenuByRole();
 
         redirectAdmin();
 
@@ -90,30 +100,29 @@ async function loadAccountPage() {
         let user = localStorage.getItem('user');
 
         if (!user) {
+            console.log('Данных в localStorage нет, запрашиваем с сервера...');
             const response = await fetch('/api/Profile/me');
-            if (!token) {
-                console.log('Нет токена, редирект');
-                window.location.href = '/';
-                return;
-            }
-
-            console.log('Запрашиваем данные пользователя...');
-            const response = await fetch('/api/Profile/me', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    console.log('Не авторизован, редирект на логин');
+                    window.location.href = '/';
+                    return;
+                }
                 throw new Error(`Ошибка: ${response.status}`);
             }
 
             user = await response.json();
             console.log('Получены данные:', user);
             localStorage.setItem('user', JSON.stringify(user));
+
+            if (user.role) {
+                localStorage.setItem('userRole', user.role);
+            }
         } else {
             user = JSON.parse(user);
             console.log('Данные из localStorage:', user);
         }
-
 
         container.innerHTML = `
             <h1>Настройки аккаунта</h1>

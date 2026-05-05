@@ -25,25 +25,36 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="/Home/Dictionary" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Me" ? "active" : "")">
-                    Словарь
-                </a>
-                <a href="/Home/Tests" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Tests" ? "active" : "")">
-                    Тесты
-                </a>
-                <a href="/Home/Lessons" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Lessons" ? "active" : "")">
-                    Уроки
-                </a>
-                <a href="/Home/Saved" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Saved" ? "active" : "")">
-                    Сохраненные
-                </a>
-                <a href="/Home/Account" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Account" ? "active" : "")">
-                    Настройки аккаунта
-                </a>
-                <div id="adminNavItem" style="display: none;">
-                    <hr style="margin: 10px 0; border-color: #eef2f6;">
-                    <a href="/Admin" class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Admin" ? "active" : "")">
-                        Админ-панель
+                <div id="userMenu">
+                    <a href="/Home/Dictionary" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Dictionary" ? "active" : "")">
+                        Словарь
+                    </a>
+                    <a href="/Home/Tests" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Tests" ? "active" : "")">
+                        Тесты
+                    </a>
+                    <a href="/Home/Lessons" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Lessons" ? "active" : "")">
+                        Уроки
+                    </a>
+                    <a href="/Home/Saved" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Saved" ? "active" : "")">
+                        Сохраненные
+                    </a>
+                    <a href="/Home/Account" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Account" ? "active" : "")">
+                        Настройки аккаунта
+                    </a>
+                </div>
+
+                <div id="adminMenu" style="display: none;">
+                    <a href="/Admin/ManageLessons" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "ManageLessons" ? "active" : "")">
+                        Управление уроками
+                    </a>
+                    <a href="/Admin/ManageTests" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "ManageTests" ? "active" : "")">
+                        Управление тестами
+                    </a>
+                    <a href="/Admin/ManageWords" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "ManageWords" ? "active" : "")">
+                        Управление словарем
+                    </a>
+                    <a href="/Home/Account" class="nav-item">
+                        Настройки аккаунта
                     </a>
                 </div>
             </nav>
@@ -73,7 +84,13 @@
     @if (ViewBag.ShowSidebar == true)
     {
         <script>
-            document.addEventListener('DOMContentLoaded', loadSidebarUser);
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof loadSidebarUser === 'function') {
+                    loadSidebarUser();
+                } else {
+                    console.error('loadSidebarUser is not defined');
+                }
+            });
         </script>
     }
 
@@ -81,7 +98,6 @@
     {
         <script src="~/js/auth-new.js" asp-append-version="true"></script>
     }
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

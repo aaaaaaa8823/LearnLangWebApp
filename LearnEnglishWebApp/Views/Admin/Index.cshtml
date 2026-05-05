@@ -5,23 +5,11 @@
 
 <div class="admin-page">
     <h1>Панель администратора</h1>
-
-    <div class="admin-stats">
-        <div class="stat-card">
-            <div class="stat-label">Управление уроками</div>
-            <a href="/Admin/ManageLessons" class="btn-admin">Перейти</a>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Управление тестами</div>
-            <a href="/Admin/ManageTests" class="btn-admin">Перейти</a>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Управление словарем</div>
-            <a href="/Admin/ManageWords" class="btn-admin">Перейти</a>
-        </div>
-    </div>
 </div>
 
 @section Scripts {
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <script>
+        console.log('Admin page loaded');
+    </script>
 }
