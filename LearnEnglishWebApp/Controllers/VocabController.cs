@@ -74,8 +74,6 @@ namespace LearnEnglishWebApp.Controllers
             }
         }
 
-        // Controllers/VocabController.cs - добавь эти методы
-
         [HttpPost("topic/{id}/save")]
         public async Task<IActionResult> SaveLesson(long id)
         {

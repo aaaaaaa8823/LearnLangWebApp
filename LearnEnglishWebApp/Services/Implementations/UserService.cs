@@ -38,6 +38,7 @@ namespace LearnEnglishWebApp.Services.Implementations
                 UserName = user.UserName,
                 Email = user.Email,
                 Level = user.Level,
+                Role = user.Role,
                 CreatedAt = user.CreatedAt
             };
         }

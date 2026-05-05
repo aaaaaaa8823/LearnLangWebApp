@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,7 +37,22 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
         ValidAudience = builder.Configuration["JwtSettings:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]))
+            Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"])),
+        RoleClaimType = ClaimTypes.Role
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            // Пробуем получить токен из cookie
+            var token = context.Request.Cookies["auth_token"];
+            if (!string.IsNullOrEmpty(token))
+            {
+                context.Token = token;
+            }
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -85,6 +101,57 @@ builder.Services.AddScoped<IVocabTopicService, VocabTopicService>();
 builder.Services.AddScoped<IGrammarTestService, GrammarTestService>();
 
 var app = builder.Build();
+
+app.Use(async (context, next) =>
+{
+    // Сохраняем оригинальный Response Body
+    var originalBodyStream = context.Response.Body;
+
+    using var memoryStream = new MemoryStream();
+    context.Response.Body = memoryStream;
+
+    await next();
+
+    // Проверяем, есть ли в ответе токен (из API логина)
+    if (context.Response.StatusCode == 200 &&
+        context.Request.Path.StartsWithSegments("/api/Auth/login"))
+    {
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        var responseBody = await new StreamReader(memoryStream).ReadToEndAsync();
+
+        // Парсим JSON ответа
+        try
+        {
+            var json = System.Text.Json.JsonDocument.Parse(responseBody);
+            if (json.RootElement.TryGetProperty("token", out var tokenElement))
+            {
+                var token = tokenElement.GetString();
+                if (!string.IsNullOrEmpty(token))
+                {
+                    // Устанавливаем cookie с токеном
+                    context.Response.Cookies.Append("auth_token", token, new CookieOptions
+                    {
+                        HttpOnly = true, // Защита от XSS
+                        Secure = true,
+                        SameSite = SameSiteMode.Strict,
+                        Expires = DateTime.UtcNow.AddHours(24)
+                    });
+                }
+            }
+        }
+        catch { }
+
+        // Возвращаем оригинальный ответ
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        await memoryStream.CopyToAsync(originalBodyStream);
+    }
+    else
+    {
+        // Просто копируем ответ
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        await memoryStream.CopyToAsync(originalBodyStream);
+    }
+});
 
 app.UseStaticFiles(new StaticFileOptions
 {

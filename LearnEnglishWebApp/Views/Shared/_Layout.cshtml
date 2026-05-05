@@ -37,13 +37,15 @@
                 <a href="/Home/Saved" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Saved" ? "active" : "")">
                     Сохраненные
                 </a>
-                @* ToDo сделать статистику
-                <a href="/Home/Statistic" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Statistic" ? "active" : "")">
-                    Статистика
-                </a> *@
                 <a href="/Home/Account" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Account" ? "active" : "")">
                     Настройки аккаунта
                 </a>
+                <div id="adminNavItem" style="display: none;">
+                    <hr style="margin: 10px 0; border-color: #eef2f6;">
+                    <a href="/Admin" class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Admin" ? "active" : "")">
+                        Админ-панель
+                    </a>
+                </div>
             </nav>
 
             <button class="logout-btn" onclick="logout()">Выйти</button>

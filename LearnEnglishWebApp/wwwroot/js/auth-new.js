@@ -166,9 +166,6 @@ async function login() {
     }
 
     try {
-
-        console.log('Email:', `"${email}"`);
-
         const response = await fetch(`${APP_API_URL}/Auth/login`, {
             method: 'POST',
             headers: {
@@ -178,10 +175,7 @@ async function login() {
             body: JSON.stringify({ email, password })
         });
 
-        console.log('Статус ответа:', response.status);
-
         const data = await response.json();
-        console.log('Ответ сервера:', data);
 
         if (!response.ok) {
             throw new Error(data.message || 'Неверный email или пароль');
@@ -191,16 +185,31 @@ async function login() {
             throw new Error('Неверный формат ответа от сервера');
         }
 
-        console.log('Успешный вход!');
-
-        localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
+        if (data.user.role) {
+            localStorage.setItem('userRole', data.user.role);
+        }
 
-        window.location.href = '/Home/Me';
+        if (data.user.role === 'Administrator') {
+            window.location.href = '/Admin';
+        } else {
+            window.location.href = '/Home/Me';
+        }
 
     } catch (error) {
         console.error('Ошибка входа:', error);
         errorDiv.textContent = error.message;
     }
+}
+
+function logout() {
+    console.log('Выход из системы...');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userRole');
+
+    document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+    window.location.href = '/';
 }

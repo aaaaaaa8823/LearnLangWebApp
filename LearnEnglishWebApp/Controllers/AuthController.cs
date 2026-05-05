@@ -86,6 +86,14 @@ namespace LearnEnglishWebApp.Controllers
                 }
 
                 var response = await _userService.LoginAsync(loginDto);
+                Response.Cookies.Append("auth_token", response.Token, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.UtcNow.AddHours(24)
+                });
+
                 _logger.LogInformation($"Login successful for: {loginDto.Email}");
                 return Ok(response);
             }

@@ -12,70 +12,68 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+function redirectAdmin(){
+    const userRole = localStorage.getItem('userRole');
+    const currentPath = window.location.pathname;
+
+    if (userRole === 'Administrator' && currentPath === '/Home/Me') {
+        console.log('Админ на странице Me, перенаправляем на /Admin');
+        window.location.href = '/Admin';
+        return true;
+    }
+    return false;
+}
 async function loadSidebarUser() {
     const userNameElement = document.getElementById('userName');
     const userInitialsElement = document.getElementById('userInitials');
     const userLevelElement = document.getElementById('userLevel');
 
-    if (!userNameElement) {
-        console.log('Элементы сайдбара не найдены');
-        return;
-    }
-
-    console.log('Загружаем данные пользователя...');
+    if (!userNameElement) return;
 
     try {
         let user = localStorage.getItem('user');
 
         if (user) {
             user = JSON.parse(user);
-            console.log('Пользователь из localStorage:', user);
         } else {
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                console.log('Нет токена, редирект на логин');
-                window.location.href = '/';
-                return;
-            }
-
-            console.log('Запрашиваем данные с /api/Profile/me');
-            const response = await fetch('/api/Profile/me', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await fetch('/api/Profile/me');
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    console.log('Ошибка авторизации, очищаем токен');
-                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('userRole');
                     window.location.href = '/';
                 }
-                throw new Error(`Ошибка загрузки: ${response.status}`);
+                throw new Error('Ошибка загрузки');
             }
 
             user = await response.json();
-            console.log('Данные от сервера:', user);
             localStorage.setItem('user', JSON.stringify(user));
+
+            if (user.role) {
+                localStorage.setItem('userRole', user.role);
+            }
         }
 
-        const userName = user.userName || user.username || 'Пользователь';
-        const userInitial = userName[0].toUpperCase();
-        const userLevel = user.level || 'A1';
+        userNameElement.textContent = user.userName || user.username;
+        userInitialsElement.textContent = (user.userName || user.username)[0].toUpperCase();
+        userLevelElement.textContent = user.level || 'A1';
 
-        console.log('Обновляем сайдбар:', { userName, userInitial, userLevel });
+        const adminNavItem = document.getElementById('adminNavItem');
+        if (adminNavItem) {
+            const userRole = user.role || localStorage.getItem('userRole');
+            if (userRole === 'Administrator') {
+                adminNavItem.style.display = 'block';
+            } else {
+                adminNavItem.style.display = 'none';
+            }
+        }
 
-        userNameElement.textContent = userName;
-        userInitialsElement.textContent = userInitial;
-        userLevelElement.textContent = userLevel;
+        redirectAdmin();
 
     } catch (error) {
         console.error('Ошибка загрузки пользователя:', error);
         userNameElement.textContent = 'Ошибка';
-        userInitialsElement.textContent = '!';
-        userLevelElement.textContent = '?';
     }
 }
 
@@ -92,7 +90,7 @@ async function loadAccountPage() {
         let user = localStorage.getItem('user');
 
         if (!user) {
-            const token = localStorage.getItem('token');
+            const response = await fetch('/api/Profile/me');
             if (!token) {
                 console.log('Нет токена, редирект');
                 window.location.href = '/';
@@ -221,21 +219,14 @@ async function updateProfile(event) {
         updateData.newPassword = newPassword;
     }
 
-    console.log('Отправляем данные:', { ...updateData, newPassword: newPassword ? '***' : null });
-
     try {
-        const token = localStorage.getItem('token');
-
         const response = await fetch('/api/Profile/update', {
             method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(updateData)
         });
-
-        console.log('Ответ сервера:', response.status);
 
         if (!response.ok) {
             const error = await response.json();
@@ -246,9 +237,11 @@ async function updateProfile(event) {
         console.log('Обновленные данные:', updatedUser);
 
         localStorage.setItem('user', JSON.stringify(updatedUser));
+        if (updatedUser.role) {
+            localStorage.setItem('userRole', updatedUser.role);
+        }
 
         await loadSidebarUser();
-
         showMessage('Профиль успешно обновлен!', 'success');
 
         document.getElementById('currentPassword').value = '';
