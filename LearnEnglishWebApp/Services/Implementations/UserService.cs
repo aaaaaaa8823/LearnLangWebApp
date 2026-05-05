@@ -202,7 +202,8 @@ namespace LearnEnglishWebApp.Services.Implementations
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim("username", user.UserName),
-            new Claim("level", user.Level)
+            new Claim("level", user.Level),
+            new Claim(ClaimTypes.Role, user.Role ?? "User")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));

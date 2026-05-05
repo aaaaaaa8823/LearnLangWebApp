@@ -1,4 +1,6 @@
-﻿namespace LearnEnglishWebApp.Services.Interfaces
+﻿using LearnEnglishWebApp.DTOs.Request;
+
+namespace LearnEnglishWebApp.Services.Interfaces
 {
     public interface ISeedService
     {

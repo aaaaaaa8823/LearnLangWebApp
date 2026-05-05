@@ -22,6 +22,7 @@ namespace LearnEnglishWebApp.Services.Implementations
 
             try
             {
+                await SeedAdminUserAsync();
                 await SeedDictionaryAsync();
                 await SeedGrammarTopicsAsync();
                 await SeedVocabLessonsAsync();
@@ -170,7 +171,6 @@ namespace LearnEnglishWebApp.Services.Implementations
             await SeedGrammarTestsAsync();
         }
 
-        // 3. ТЕСТЫ по грамматике
         private async Task SeedGrammarTestsAsync()
         {
             if (await _context.GrammarTests.AnyAsync())
@@ -355,6 +355,47 @@ namespace LearnEnglishWebApp.Services.Implementations
 
             await _context.SaveChangesAsync();
             _logger.LogInformation($"Добавлено {tests.Count} Vocab тестов");
+        }
+
+        public async Task SeedAdminUserAsync()
+        {
+            var adminExists = await _context.Users.AnyAsync(u => u.Role == "Administrator");
+            if (adminExists)
+            {
+                _logger.LogInformation("Администратор уже существует");
+                return;
+            }
+
+            var adminPassword = BCrypt.Net.BCrypt.HashPassword("Admin123!");
+
+            var admin = new User
+            {
+                UserName = "admin",
+                Email = "admin@learnenglish.com",
+                PasswordHash = adminPassword,
+                Level = "C2",
+                Role = "Administrator",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _context.Users.AddAsync(admin);
+            await _context.SaveChangesAsync();
+
+            await CreateDefaultCollectionsForUser(admin.Id);
+
+            _logger.LogInformation("Администратор создан: Email=admin@learnenglish.com, Пароль=Admin123!");
+        }
+
+        private async Task CreateDefaultCollectionsForUser(long userId)
+        {
+            var collections = new[]
+            {
+        new Collection { UserId = userId, Name = "В процессе", IsDefault = true, CreatedAt = DateTime.UtcNow },
+        new Collection { UserId = userId, Name = "Выученные", IsDefault = true, CreatedAt = DateTime.UtcNow },
+            };
+
+            await _context.Collections.AddRangeAsync(collections);
+            await _context.SaveChangesAsync();
         }
     }
 }
