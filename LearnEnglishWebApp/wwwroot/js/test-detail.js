@@ -15,23 +15,24 @@ async function loadTest() {
 
     if (!testId) {
         console.log('ID теста не указан');
+        container.innerHTML = '<div class="error">ID теста не указан</div>';
         return;
     }
 
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/';
-            return;
-        }
-
         const apiUrl = testType === 'grammar'
             ? `/api/Grammar/test/${testId}`
             : `/api/Vocab/test/${testId}`;
 
         const response = await fetch(apiUrl, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include'
         });
+
+        if (response.status === 401) {
+            console.log('Not authorized');
+            container.innerHTML = '<div class="error">Необходимо войти в систему</div>';
+            return;
+        }
 
         if (!response.ok) {
             throw new Error('Ошибка загрузки теста');
@@ -41,6 +42,15 @@ async function loadTest() {
         currentRemainingSeconds = currentTest.timeLimitMinutes * 60;
         startTime = Date.now();
         startTimer();
+
+        if (!currentTest.questions || currentTest.questions.length === 0) {
+            console.log('Нет вопросов, используем мок-вопросы');
+            currentTest.questions = getMockQuestions();
+            currentTest.questionCount = currentTest.questions.length;
+            currentTest.passingScore = 60;
+            currentTest.timeLimitMinutes = 10;
+        }
+
         displayQuestion();
 
     } catch (error) {
@@ -177,10 +187,11 @@ function prevQuestion() {
 function nextQuestion() {
     const hasAnswer = userAnswers[currentQuestionIndex] && userAnswers[currentQuestionIndex].selectedOption !== undefined;
 
-    if (!userAnswers[currentQuestionIndex]) {
-        userAnswers[currentQuestionIndex] = {};
+    if (!hasAnswer) {
+        if (!confirm('Вы не ответили на вопрос. Пропустить?')) {
+            return;
+        }
     }
-    userAnswers[currentQuestionIndex].selectedOption = undefined;
 
     if (currentQuestionIndex < currentTest.questions.length - 1) {
         currentQuestionIndex++;
@@ -237,7 +248,6 @@ async function submitTest() {
     });
 
     try {
-        const token = localStorage.getItem('token');
         const testType = new URLSearchParams(window.location.search).get('type') || 'grammar';
 
         const resultData = {
@@ -258,10 +268,10 @@ async function submitTest() {
         await fetch(apiUrl, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(resultData)
+            body: JSON.stringify(resultData),
+            credentials: 'include'
         });
 
     } catch (error) {
@@ -380,14 +390,13 @@ function getMockQuestions() {
     ];
 }
 
-// TODO: Временно мок-вопросы, пока не сделаю админскую часть
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     await loadTest();
-    if (currentTest && !currentTest.questions) {
-        currentTest.questions = getMockQuestions();
-        currentTest.questionCount = currentTest.questions.length;
-        currentTest.passingScore = 60;
-        currentTest.timeLimitMinutes = 10;
-        displayQuestion();
-    }
 });

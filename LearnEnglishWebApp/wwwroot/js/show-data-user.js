@@ -1,27 +1,20 @@
-﻿function logout() {
-    console.log('Выход из системы...');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '/';
-}
-
-function escapeHtml(text) {
+﻿function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
 
-function redirectAdmin(){
-    const userRole = localStorage.getItem('userRole');
-    const currentPath = window.location.pathname;
-
-    if (userRole === 'Administrator' && currentPath === '/Home/Me') {
-        console.log('Админ на странице Me, перенаправляем на /Admin');
-        window.location.href = '/Admin';
-        return true;
+function showMessage(text, type) {
+    const messageDiv = document.getElementById('formMessage');
+    if (messageDiv) {
+        messageDiv.textContent = text;
+        messageDiv.className = `form-message ${type}`;
+        setTimeout(() => {
+            messageDiv.textContent = '';
+            messageDiv.className = 'form-message';
+        }, 3000);
     }
-    return false;
 }
 
 function toggleMenuByRole() {
@@ -51,16 +44,16 @@ async function loadSidebarUser() {
     try {
         let user = localStorage.getItem('user');
 
-        if (user) {
-            user = JSON.parse(user);
-        } else {
-            const response = await fetch('/api/Profile/me');
+        if (!user) {
+            const response = await fetch('/api/Profile/me', {
+                credentials: 'include'
+            });
 
             if (!response.ok) {
                 if (response.status === 401) {
                     localStorage.removeItem('user');
                     localStorage.removeItem('userRole');
-                    window.location.href = '/';
+                    return;
                 }
                 throw new Error('Ошибка загрузки');
             }
@@ -71,6 +64,8 @@ async function loadSidebarUser() {
             if (user.role) {
                 localStorage.setItem('userRole', user.role);
             }
+        } else {
+            user = JSON.parse(user);
         }
 
         userNameElement.textContent = user.userName || user.username;
@@ -78,7 +73,6 @@ async function loadSidebarUser() {
         userLevelElement.textContent = user.level || 'A1';
 
         toggleMenuByRole();
-
         redirectAdmin();
 
     } catch (error) {
@@ -86,6 +80,7 @@ async function loadSidebarUser() {
         userNameElement.textContent = 'Ошибка';
     }
 }
+
 
 async function loadAccountPage() {
     const container = document.getElementById('profileContainer');
@@ -100,12 +95,12 @@ async function loadAccountPage() {
         let user = localStorage.getItem('user');
 
         if (!user) {
-            console.log('Данных в localStorage нет, запрашиваем с сервера...');
-            const response = await fetch('/api/Profile/me');
+            const response = await fetch('/api/Profile/me', {
+                credentials: 'include'
+            });
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    console.log('Не авторизован, редирект на логин');
                     window.location.href = '/';
                     return;
                 }
@@ -113,7 +108,6 @@ async function loadAccountPage() {
             }
 
             user = await response.json();
-            console.log('Получены данные:', user);
             localStorage.setItem('user', JSON.stringify(user));
 
             if (user.role) {
@@ -121,7 +115,6 @@ async function loadAccountPage() {
             }
         } else {
             user = JSON.parse(user);
-            console.log('Данные из localStorage:', user);
         }
 
         container.innerHTML = `
@@ -205,7 +198,6 @@ async function updateProfile(event) {
     const currentPassword = document.getElementById('currentPassword').value;
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
-    const messageDiv = document.getElementById('formMessage');
 
     if (!username || !email) {
         showMessage('Заполните все обязательные поля', 'error');
@@ -234,7 +226,8 @@ async function updateProfile(event) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(updateData)
+            body: JSON.stringify(updateData),
+            credentials: 'include'
         });
 
         if (!response.ok) {
@@ -264,18 +257,6 @@ async function updateProfile(event) {
     } catch (error) {
         console.error('Ошибка обновления:', error);
         showMessage(error.message, 'error');
-    }
-}
-
-function showMessage(text, type) {
-    const messageDiv = document.getElementById('formMessage');
-    if (messageDiv) {
-        messageDiv.textContent = text;
-        messageDiv.className = `form-message ${type}`;
-        setTimeout(() => {
-            messageDiv.textContent = '';
-            messageDiv.className = 'form-message';
-        }, 3000);
     }
 }
 

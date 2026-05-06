@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using LearnEnglishWebApp.Services.Interfaces;
 using LearnEnglishWebApp.DTOs.Request;
-using Microsoft.Extensions.Logging; 
+using System.Security.Claims;
 
 namespace LearnEnglishWebApp.Controllers
 {
@@ -10,148 +12,69 @@ namespace LearnEnglishWebApp.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly ILogger<AuthController> _logger; 
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IUserService userService, ILogger<AuthController> logger) 
+        public AuthController(IUserService userService, ILogger<AuthController> logger)
         {
             _userService = userService;
             _logger = logger;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto) 
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             try
             {
-                _logger.LogInformation($"Register attempt for email: {registerDto?.Email}");
-
-                if (registerDto == null)
-                {
-                    _logger.LogWarning("RegisterDto is null");
-                    return BadRequest(new { message = "Данные не получены" });
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    var errors = ModelState.Values
-                        .SelectMany(v => v.Errors)
-                        .Select(e => e.ErrorMessage);
-                    _logger.LogWarning($"ModelState errors: {string.Join(", ", errors)}");
-                    return BadRequest(new { message = "Неверный формат данных", errors });
-                }
-
                 var user = await _userService.RegisterAsync(registerDto);
-                _logger.LogInformation($"User registered successfully: {user.Email}");
                 return Ok(user);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Registration error for {registerDto?.Email}");
                 return BadRequest(new { message = ex.Message });
             }
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto) 
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             try
             {
-                _logger.LogInformation($"Login attempt for email: {loginDto?.Email}");
+                var user = await _userService.LoginAsync(loginDto);
 
-                if (loginDto == null)
-                {
-                    _logger.LogWarning("LoginDto is null");
-                    return BadRequest(new { message = "Данные не получены. Убедитесь, что отправляете JSON с полями email и password" });
-                }
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role ?? "User")
+        };
 
-                if (string.IsNullOrEmpty(loginDto.Email))
-                {
-                    _logger.LogWarning("Email is empty");
-                    return BadRequest(new { message = "Email не может быть пустым" });
-                }
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
 
-                if (string.IsNullOrEmpty(loginDto.Password))
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties
                 {
-                    _logger.LogWarning("Password is empty");
-                    return BadRequest(new { message = "Пароль не может быть пустым" });
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    var errors = ModelState.Values
-                        .SelectMany(v => v.Errors)
-                        .Select(e => e.ErrorMessage);
-                    _logger.LogWarning($"ModelState errors: {string.Join(", ", errors)}");
-                    return BadRequest(new { message = "Неверный формат данных", errors });
-                }
-
-                var response = await _userService.LoginAsync(loginDto);
-                Response.Cookies.Append("auth_token", response.Token, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTime.UtcNow.AddHours(24)
+                    IsPersistent = true,
+                    ExpiresUtc = DateTime.UtcNow.AddDays(7)
                 });
 
-                _logger.LogInformation($"Login successful for: {loginDto.Email}");
-                return Ok(response);
+                return Ok(new
+                {
+                    user = user,
+                    redirectUrl = user.Role == "Administrator" ? "/Admin" : "/Home/Me"
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Login error for {loginDto?.Email}");
                 return Unauthorized(new { message = ex.Message });
             }
         }
 
-        [HttpGet("user/{id}")]
-        public async Task<IActionResult> GetUserById(long id)
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
         {
-            try
-            {
-                _logger.LogInformation($"Get user by id: {id}");
-                var user = await _userService.GetUserByIdAsync(id);
-                if (user == null)
-                {
-                    _logger.LogWarning($"User not found: {id}");
-                    return NotFound(new { message = "Пользователь не найден" });
-                }
-
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error getting user by id: {id}");
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [HttpGet("user/by-email")]
-        public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
-        {
-            try
-            {
-                _logger.LogInformation($"Get user by email: {email}");
-
-                if (string.IsNullOrEmpty(email))
-                {
-                    return BadRequest(new { message = "Email не указан" });
-                }
-
-                var user = await _userService.GetUserByEmailAsync(email);
-                if (user == null)
-                {
-                    _logger.LogWarning($"User not found: {email}");
-                    return NotFound(new { message = "Пользователь не найден" });
-                }
-
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error getting user by email: {email}");
-                return BadRequest(new { message = ex.Message });
-            }
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Ok(new { message = "Logged out" });
         }
     }
 }

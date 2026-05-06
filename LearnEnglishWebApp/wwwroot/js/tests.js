@@ -1,19 +1,18 @@
-﻿let allTest = [];
+﻿let allTests = [];
 
 async function loadTests() {
     const container = document.getElementById('testsContainer');
     if (!container) return;
 
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/';
+        const response = await fetch('/api/Grammar/tests', {
+            credentials: 'include'
+        });
+
+        if (response.status === 401) {
+            console.log('Not authorized');
             return;
         }
-
-        const response = await fetch('/api/Grammar/tests', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
 
         if (!response.ok) {
             throw new Error('Ошибка загрузки тестов');
@@ -33,6 +32,7 @@ function displayTests(tests) {
     const container = document.getElementById('testsContainer');
     if (!tests || tests.length === 0) {
         console.log('Тесты не найдены')
+        container.innerHTML = '<div class="empty">Тесты не найдены</div>';
         return;
     }
 
@@ -55,8 +55,8 @@ function displayTests(tests) {
                 <div class="test-body">
                     <div class="test-title">${escapeHtml(test.title)}</div>
                     <div class="test-description">
-                        ${test.questionCount} вопросов | 
-                        Проходной балл: ${test.passingScore}% | 
+                        ${test.questionCount} вопросов |
+                        Проходной балл: ${test.passingScore}% |
                         Время: ${test.timeLimitMinutes} мин
                     </div>
                 </div>
@@ -117,3 +117,5 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.addEventListener('input', handleSearchInput);
     }
 });
+
+

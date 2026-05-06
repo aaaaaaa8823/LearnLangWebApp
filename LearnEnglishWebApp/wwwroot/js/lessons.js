@@ -1,28 +1,25 @@
-﻿let allLessons = [];
+﻿console.log('lessons.js loaded');
+
+let allLessons = [];
 
 async function loadLessons() {
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadLessons);
-        return;
-    }
+    console.log('loadLessons started');
 
     const container = document.getElementById('lessonsContainer');
-
     if (!container) {
         console.error('Контейнер lessonsContainer не найден на странице');
         return;
     }
 
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/';
+        const grammarResponse = await fetch('/api/Grammar/topics', {
+            credentials: 'include'
+        });
+
+        if (grammarResponse.status === 401) {
+            console.log('Not authorized');
             return;
         }
-
-        const grammarResponse = await fetch('/api/Grammar/topics', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
 
         if (!grammarResponse.ok) {
             throw new Error('Ошибка загрузки грамматических уроков');
@@ -31,8 +28,13 @@ async function loadLessons() {
         let grammarLessons = await grammarResponse.json();
 
         const vocabResponse = await fetch('/api/Vocab/topics', {
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include'
         });
+
+        if (vocabResponse.status === 401) {
+            console.log('Not authorized');
+            return;
+        }
 
         if (!vocabResponse.ok) {
             throw new Error('Ошибка загрузки вокабулярных уроков');
@@ -41,45 +43,27 @@ async function loadLessons() {
         let vocabLessons = await vocabResponse.json();
 
         const savedGrammarResponse = await fetch('/api/Grammar/saved', {
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include'
         });
 
         if (savedGrammarResponse.ok) {
             const savedLessons = await savedGrammarResponse.json();
             const savedIds = new Set(savedLessons.map(l => l.lessonId));
-
-            grammarLessons = grammarLessons.map(lesson => ({
-                ...lesson,
-                type: 'grammar',
-                isSaved: savedIds.has(lesson.id)
-            }));
+            grammarLessons = grammarLessons.map(lesson => ({ ...lesson, type: 'grammar', isSaved: savedIds.has(lesson.id) }));
         } else {
-            grammarLessons = grammarLessons.map(lesson => ({
-                ...lesson,
-                type: 'grammar',
-                isSaved: false
-            }));
+            grammarLessons = grammarLessons.map(lesson => ({ ...lesson, type: 'grammar', isSaved: false }));
         }
 
         const savedVocabResponse = await fetch('/api/Vocab/saved', {
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include'
         });
 
         if (savedVocabResponse.ok) {
             const savedVocabLessons = await savedVocabResponse.json();
             const savedVocabIds = new Set(savedVocabLessons.map(l => l.lessonId));
-
-            vocabLessons = vocabLessons.map(lesson => ({
-                ...lesson,
-                type: 'vocab',
-                isSaved: savedVocabIds.has(lesson.id)
-            }));
+            vocabLessons = vocabLessons.map(lesson => ({ ...lesson, type: 'vocab', isSaved: savedVocabIds.has(lesson.id) }));
         } else {
-            vocabLessons = vocabLessons.map(lesson => ({
-                ...lesson,
-                type: 'vocab',
-                isSaved: false
-            }));
+            vocabLessons = vocabLessons.map(lesson => ({ ...lesson, type: 'vocab', isSaved: false }));
         }
 
         allLessons = [...grammarLessons, ...vocabLessons];
@@ -92,15 +76,11 @@ async function loadLessons() {
         });
 
         console.log('Загружено уроков:', allLessons.length);
-        console.log('Грамматика:', grammarLessons.length);
-        console.log('Вокабуляр:', vocabLessons.length);
         displayLessons(allLessons);
 
     } catch (error) {
         console.error('Ошибка:', error);
-        if (container) {
-            container.innerHTML = '<div class="error">Ошибка загрузки уроков: ' + error.message + '</div>';
-        }
+        container.innerHTML = '<div class="error">Ошибка загрузки уроков: ' + error.message + '</div>';
     }
 }
 
@@ -113,13 +93,9 @@ function displayLessons(lessons) {
     }
 
     container.innerHTML = lessons.map(lesson => {
-        let buttonHtml = '';
-
-        if (lesson.isSaved) {
-            buttonHtml = `<button class="btn-add saved" onclick="event.stopPropagation(); unsaveLesson(${lesson.id}, '${lesson.type}')" style="background:#4caf50;">Сохранено</button>`;
-        } else {
-            buttonHtml = `<button class="btn-add" onclick="event.stopPropagation(); saveLesson(${lesson.id}, '${lesson.type}')">Сохранить</button>`;
-        }
+        const buttonHtml = lesson.isSaved
+            ? `<button class="btn-add saved" style="background:#4caf50;" disabled>Сохранено</button>`
+            : `<button class="btn-add" onclick="event.stopPropagation(); saveLesson(${lesson.id}, '${lesson.type}')">Сохранить</button>`;
 
         return `
             <div class="lesson-card" onclick="goToLesson(${lesson.id}, '${lesson.type}')">
@@ -132,9 +108,7 @@ function displayLessons(lessons) {
                     <div class="lesson-description">${escapeHtml(lesson.description) || 'Описание отсутствует'}</div>
                 </div>
                 <div class="lesson-footer">
-                    <div class="tests-count">
-                        ${lesson.tests && lesson.tests.length > 0 ? `${lesson.tests.length} тест(ов)` : 'Без тестов'}
-                    </div>
+                    <div class="tests-count">${lesson.tests && lesson.tests.length > 0 ? `${lesson.tests.length} тест(ов)` : 'Без тестов'}</div>
                     ${buttonHtml}
                 </div>
             </div>
@@ -142,85 +116,14 @@ function displayLessons(lessons) {
     }).join('');
 }
 
-async function unsaveLesson(lessonId, lessonType) {
-    if (!confirm('Удалить урок из сохраненных?')) {
-        return;
-    }
-
-    try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            alert('Необходимо войти в систему');
-            window.location.href = '/';
-            return;
-        }
-
-        const apiUrl = lessonType === 'grammar'
-            ? `/api/Grammar/topic/${lessonId}/unsave`
-            : `/api/Vocab/topic/${lessonId}/unsave`;
-
-        const response = await fetch(apiUrl, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Ошибка удаления из сохраненных');
-        }
-
-        alert('Урок удален из сохраненных');
-
-        const lessonIndex = allLessons.findIndex(l => l.id === lessonId && l.type === lessonType);
-        if (lessonIndex !== -1) {
-            allLessons[lessonIndex].isSaved = false;
-        }
-
-        displayLessons(allLessons);
-
-    } catch (error) {
-        console.error('Ошибка:', error);
-        alert(error.message);
-    }
-}
-
 async function saveLesson(lessonId, lessonType) {
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            alert('Необходимо войти в систему');
-            window.location.href = '/';
-            return;
-        }
+        const apiUrl = lessonType === 'grammar' ? `/api/Grammar/topic/${lessonId}/save` : `/api/Vocab/topic/${lessonId}/save`;
+        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}), credentials: 'include' });
 
-        const apiUrl = lessonType === 'grammar'
-            ? `/api/Grammar/topic/${lessonId}/save`
-            : `/api/Vocab/topic/${lessonId}/save`;
-
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Ошибка сохранения урока');
-        }
-
-        alert('Урок сохранен! Вы можете найти его в разделе "Сохраненные"');
-
-        const lessonIndex = allLessons.findIndex(l => l.id === lessonId && l.type === lessonType);
-        if (lessonIndex !== -1) {
-            allLessons[lessonIndex].isSaved = true;
-        }
-
-        displayLessons(allLessons);
-
+        if (!response.ok) throw new Error('Ошибка сохранения урока');
+        alert('Урок сохранен!');
+        await loadLessons();
     } catch (error) {
         console.error('Ошибка:', error);
         alert(error.message);
@@ -233,17 +136,11 @@ function goToLesson(lessonId, lessonType) {
 
 function searchLessons() {
     const searchTerm = document.getElementById('lessonSearch').value.toLowerCase();
-
     if (!searchTerm) {
         displayLessons(allLessons);
         return;
     }
-
-    const filtered = allLessons.filter(lesson =>
-        lesson.title.toLowerCase().includes(searchTerm) ||
-        (lesson.description && lesson.description.toLowerCase().includes(searchTerm)) ||
-        lesson.type.toLowerCase().includes(searchTerm)
-    );
+    const filtered = allLessons.filter(lesson => lesson.title.toLowerCase().includes(searchTerm) || (lesson.description && lesson.description.toLowerCase().includes(searchTerm)));
     displayLessons(filtered);
 }
 
@@ -254,17 +151,16 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-let searchTimeout;
-function handleSearchInput() {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(searchLessons, 300);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadLessons();
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOM loaded, loading lessons...');
+    await loadLessons();
 
     const searchInput = document.getElementById('lessonSearch');
     if (searchInput) {
-        searchInput.addEventListener('input', handleSearchInput);
+        let timeout;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(searchLessons, 300);
+        });
     }
 });

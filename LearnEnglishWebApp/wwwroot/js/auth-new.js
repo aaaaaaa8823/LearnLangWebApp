@@ -2,7 +2,7 @@
 console.log('APP_API_URL:', APP_API_URL);
 
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('DOM загружен, инициализация обработчиков. мяу...');
+    console.log('DOM загружен, инициализация обработчиков');
     initTabs();
 });
 
@@ -17,63 +17,30 @@ function initTabs() {
 }
 
 function switchTab(tab) {
-        console.log('Переключение на вкладку:', tab);
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            if (btn.dataset.tab === tab) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
-        document.querySelectorAll('.auth-form').forEach(form => {
-            if (form.id === tab + '-form') {
-                form.classList.add('active');
-            } else {
-                form.classList.remove('active');
-            }
-        });
+    console.log('Переключение на вкладку:', tab);
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        if (btn.dataset.tab === tab) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    document.querySelectorAll('.auth-form').forEach(form => {
+        if (form.id === tab + '-form') {
+            form.classList.add('active');
+        } else {
+            form.classList.remove('active');
+        }
+    });
 
     const subtitle = document.getElementById('authSubtitle');
-
-    if (tab === 'login') {
-        subtitle.textContent = 'Продолжи учить иностранные языки сегодня!';
-    } else {
-        subtitle.textContent = 'Начни учить иностранные языки сегодня!';
+    if (subtitle) {
+        if (tab === 'login') {
+            subtitle.textContent = 'Продолжи учить иностранные языки сегодня!';
+        } else {
+            subtitle.textContent = 'Начни учить иностранные языки сегодня!';
+        }
     }
-}
-
-
-function isTokenExpired(token) {
-    try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const exp = payload.exp * 1000;
-        return Date.now() >= exp;
-    } catch (e) {
-        return true;
-    }
-}
-
-async function fetchWithAuth(url, options = {}) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        window.location.href = '/';
-        throw new Error('Нет токена авторизации');
-    }
-    if (isTokenExpired(token)) {
-        logout(); 
-        throw new Error('Токен истек');
-    }
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-        ...options.headers
-    };
-    const response = await fetch(url, { ...options, headers });
-    if (response.status === 401) {
-        logout();
-        throw new Error('Не авторизован');
-    }
-    return response;
 }
 
 async function register() {
@@ -119,16 +86,8 @@ async function register() {
         });
 
         const data = await response.json();
-        console.log('Ответ регистрации:', data);
 
         if (!response.ok) {
-            if (data.errors) {
-                const errorMessages = [];
-                for (const field in data.errors) {
-                    errorMessages.push(`${field}: ${data.errors[field].join(', ')}`);
-                }
-                throw new Error(errorMessages.join('; '));
-            }
             throw new Error(data.message || 'Ошибка регистрации');
         }
 
@@ -168,11 +127,9 @@ async function login() {
     try {
         const response = await fetch(`${APP_API_URL}/Auth/login`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+            credentials: 'include'
         });
 
         const data = await response.json();
@@ -181,35 +138,55 @@ async function login() {
             throw new Error(data.message || 'Неверный email или пароль');
         }
 
-        if (!data.token || !data.user) {
-            throw new Error('Неверный формат ответа от сервера');
-        }
+        console.log('Login response:', data);
+        console.log('Redirecting to:', data.redirectUrl);
 
-        localStorage.setItem('user', JSON.stringify(data.user));
-
-        if (data.user.role) {
+        if (data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user));
             localStorage.setItem('userRole', data.user.role);
         }
 
-        if (data.user.role === 'Administrator') {
-            window.location.href = '/Admin';
-        } else {
-            window.location.href = '/Home/Me';
-        }
+        setTimeout(() => {
+            window.location.href = data.redirectUrl || '/Home/Me';
+        }, 100);
 
     } catch (error) {
-        console.error('Ошибка входа:', error);
         errorDiv.textContent = error.message;
     }
 }
 
-function logout() {
+async function logout() {
     console.log('Выход из системы...');
-    localStorage.removeItem('token');
+
+    try {
+        await fetch(`${APP_API_URL}/Auth/logout`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+    } catch (error) {
+        console.error('Ошибка при выходе:', error);
+    }
+
     localStorage.removeItem('user');
     localStorage.removeItem('userRole');
-
-    document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-
     window.location.href = '/';
+}
+
+async function checkAuthStatus() {
+    try {
+        const response = await fetch('/api/Profile/me', {
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            const user = await response.json();
+            if (user.role === 'Administrator') {
+                window.location.href = '/Admin';
+            } else {
+                window.location.href = '/Home/Me';
+            }
+        }
+    } catch (error) {
+        console.log('Не авторизован');
+    }
 }

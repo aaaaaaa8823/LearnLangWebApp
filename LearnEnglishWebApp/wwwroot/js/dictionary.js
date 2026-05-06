@@ -5,14 +5,8 @@ let currentModalStatus = null
 
 async function loadUserWordStats() {
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/';
-            return;
-        }
-
         const response = await fetch('/api/Profile/stats', {
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include'
         });
 
         if (response.ok) {
@@ -25,6 +19,8 @@ async function loadUserWordStats() {
 
             if (learningElement) learningElement.textContent = learningWords;
             if (learnedElement) learnedElement.textContent = learnedWords;
+        } else if (response.status === 401) {
+            console.log('Not authorized');
         }
     } catch (error) {
         console.error('Ошибка загрузки статистики слов:', error);
@@ -64,15 +60,14 @@ window.onclick = function (event) {
 
 async function loadUserWordsByStatus(status) {
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/';
+        const response = await fetch(`/api/UserWords/my-words?status=${status}`, {
+            credentials: 'include'
+        });
+
+        if (response.status === 401) {
+            console.log('Not authorized');
             return;
         }
-
-        const response = await fetch(`/api/UserWords/my-words?status=${status}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
 
         if (!response.ok) throw new Error('Ошибка загрузки слов');
 
@@ -91,15 +86,14 @@ async function loadDictionaryWords() {
     if (!container) return;
 
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/';
+        const response = await fetch('/api/Dictionary/all', {
+            credentials: 'include'
+        });
+
+        if (response.status === 401) {
+            console.log('Not authorized');
             return;
         }
-
-        const response = await fetch('/api/Dictionary/all', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
 
         if (!response.ok) throw new Error('Ошибка загрузки слов');
 
@@ -153,20 +147,19 @@ function displayUserWords(words, status) {
 
 async function markAsLearned(wordId, wordText) {
     try {
-        const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user'));
 
         const response = await fetch(`/api/UserWords/update-status`, {
             method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 userId: user.id,
                 wordId: wordId,
                 status: 'learned'
-            })
+            }),
+            credentials: 'include'
         });
 
         if (!response.ok) throw new Error('Ошибка обновления статуса');
@@ -194,20 +187,19 @@ async function markAsLearned(wordId, wordText) {
 
 async function markAsLearning(wordId, wordText) {
     try {
-        const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user'));
 
         const response = await fetch(`/api/UserWords/update-status`, {
             method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 userId: user.id,
                 wordId: wordId,
                 status: 'learning'
-            })
+            }),
+            credentials: 'include'
         });
 
         if (!response.ok) throw new Error('Ошибка обновления статуса');
@@ -239,19 +231,18 @@ async function removeWord(wordId, wordText) {
     }
 
     try {
-        const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user'));
 
         const response = await fetch(`/api/UserWords/remove`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 userId: user.id,
                 wordId: wordId
-            })
+            }),
+            credentials: 'include'
         });
 
         if (!response.ok) throw new Error('Ошибка удаления слова');
@@ -317,15 +308,14 @@ async function searchWords() {
     }
 
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/';
+        const response = await fetch(`/api/Dictionary/search?q=${encodeURIComponent(searchTerm)}`, {
+            credentials: 'include'
+        });
+
+        if (response.status === 401) {
+            console.log('Not authorized');
             return;
         }
-
-        const response = await fetch(`/api/Dictionary/search?q=${encodeURIComponent(searchTerm)}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
 
         if (!response.ok) throw new Error('Ошибка поиска');
 
@@ -339,17 +329,9 @@ async function searchWords() {
 
 async function addWordToLearning(wordId, wordText) {
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            alert('Необходимо войти в систему');
-            window.location.href = '/';
-            return;
-        }
-
         const userStr = localStorage.getItem('user');
         if (!userStr) {
             alert('Данные пользователя не найдены');
-            window.location.href = '/';
             return;
         }
 
@@ -358,15 +340,20 @@ async function addWordToLearning(wordId, wordText) {
         const response = await fetch('/api/UserWords/add', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 userId: user.id,
                 wordId: wordId,
                 status: 'learning'
-            })
+            }),
+            credentials: 'include'
         });
+
+        if (response.status === 401) {
+            alert('Необходимо войти в систему');
+            return;
+        }
 
         if (!response.ok) {
             let errorMessage = 'Ошибка добавления слова';

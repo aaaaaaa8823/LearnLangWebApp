@@ -5,18 +5,12 @@ async function loadSavedLessons() {
     if (!container) return;
 
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/';
-            return;
-        }
-
         const grammarResponse = await fetch('/api/Grammar/saved', {
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include'
         });
 
         const vocabResponse = await fetch('/api/Vocab/saved', {
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include'
         });
 
         let allSaved = [];
@@ -32,7 +26,9 @@ async function loadSavedLessons() {
         }
 
         if (allSaved.length === 0 && !grammarResponse.ok && !vocabResponse.ok) {
-            throw new Error('Ошибка загрузки сохраненных уроков');
+            console.log('Нет сохраненных уроков');
+            displaySavedLessons([]);
+            return;
         }
 
         const uniqueLessons = new Map();
@@ -114,18 +110,19 @@ async function removeSavedLesson(lessonId, lessonType) {
     }
 
     try {
-        const token = localStorage.getItem('token');
-
         const apiUrl = lessonType === 'grammar'
             ? `/api/Grammar/topic/${lessonId}/unsave`
             : `/api/Vocab/topic/${lessonId}/unsave`;
 
         const response = await fetch(apiUrl, {
             method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
+            credentials: 'include'
         });
+
+        if (response.status === 401) {
+            alert('Необходимо войти в систему');
+            return;
+        }
 
         if (!response.ok) {
             const error = await response.json();

@@ -8,11 +8,13 @@ namespace LearnEnglishWebApp.Services.Interfaces
         Task<UserDto> GetUserByIdAsync(long id);
         Task<UserDto> GetUserByEmailAsync(string email);
         Task<UserDto> RegisterAsync(RegisterDto registerDto);
-        Task<AuthResponseDto> LoginAsync(LoginDto loginDto);
+        Task<UserDto> LoginAsync(LoginDto loginDto);
         Task<UserDto> UpdateLevelAsync(long userId, string newLevel);
 
         Task<UserDto> UpdateProfileAsync(long userId, UpdateProfileDto updateDto);
         Task<UserStatsDto> GetUserStatsAsync(long userId);
+
+        Task<bool> VerifyPasswordAsync(string email, string password);
 
     }
 }

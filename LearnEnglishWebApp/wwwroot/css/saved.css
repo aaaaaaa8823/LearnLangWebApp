@@ -172,31 +172,3 @@
         grid-template-columns: 1fr;
     }
 }
-
-/*.saved-type {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: 500;
-    margin-left: 8px;
-}*/
-
-/*    .saved-type.grammar {
-        background: #1a3b5d;
-        color: white;
-    }
-
-    .saved-type.vocab {
-        background: #ff9800;
-        color: white;
-    }*/
-
-/*.saved-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-    gap: 8px;
-}*/

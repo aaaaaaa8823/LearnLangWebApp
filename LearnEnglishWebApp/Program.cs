@@ -1,14 +1,11 @@
 using LearnEnglishWebApp.Data;
 using LearnEnglishWebApp.Data.Repositories.Implementations;
 using LearnEnglishWebApp.Data.Repositories.Interfaces;
-using LearnEnglishWebApp.Services.Classes;
 using LearnEnglishWebApp.Services.Implementations;
 using LearnEnglishWebApp.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Npgsql;
-using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,57 +14,31 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
-// Настройка JWT
-builder.Services.Configure<JWTSettings>(
-    builder.Configuration.GetSection("JwtSettings"));
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-        ValidAudience = builder.Configuration["JwtSettings:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"])),
-        RoleClaimType = ClaimTypes.Role
-    };
-
-    options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            // Пробуем получить токен из cookie
-            var token = context.Request.Cookies["auth_token"];
-            if (!string.IsNullOrEmpty(token))
-            {
-                context.Token = token;
-            }
-            return Task.CompletedTask;
-        }
-    };
-});
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.LoginPath = "/Home/Index";
+        options.LogoutPath = "/Home/Index";
+        options.AccessDeniedPath = "/Home/Index";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7); 
+        options.SlidingExpiration = true;
+    });
 
 builder.Services.AddAuthorization();
-
 builder.Services.AddControllersWithViews();
 
-// Настройка CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("AllowSpecific", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("https://localhost:7293", "http://localhost:5083")
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 
@@ -80,9 +51,7 @@ var dataSource = dataSourceBuilder.Build();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(dataSource));
 
-//тут регать сервисы и репозитории
-
-
+// Регистрация сервисов
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDictionaryRepository, DictionaryRepository>();
 builder.Services.AddScoped<IUserWordsRepository, UserWordsRepository>();
@@ -102,66 +71,6 @@ builder.Services.AddScoped<IGrammarTestService, GrammarTestService>();
 
 var app = builder.Build();
 
-app.Use(async (context, next) =>
-{
-    // Сохраняем оригинальный Response Body
-    var originalBodyStream = context.Response.Body;
-
-    using var memoryStream = new MemoryStream();
-    context.Response.Body = memoryStream;
-
-    await next();
-
-    // Проверяем, есть ли в ответе токен (из API логина)
-    if (context.Response.StatusCode == 200 &&
-        context.Request.Path.StartsWithSegments("/api/Auth/login"))
-    {
-        memoryStream.Seek(0, SeekOrigin.Begin);
-        var responseBody = await new StreamReader(memoryStream).ReadToEndAsync();
-
-        // Парсим JSON ответа
-        try
-        {
-            var json = System.Text.Json.JsonDocument.Parse(responseBody);
-            if (json.RootElement.TryGetProperty("token", out var tokenElement))
-            {
-                var token = tokenElement.GetString();
-                if (!string.IsNullOrEmpty(token))
-                {
-                    // Устанавливаем cookie с токеном
-                    context.Response.Cookies.Append("auth_token", token, new CookieOptions
-                    {
-                        HttpOnly = true, // Защита от XSS
-                        Secure = true,
-                        SameSite = SameSiteMode.Strict,
-                        Expires = DateTime.UtcNow.AddHours(24)
-                    });
-                }
-            }
-        }
-        catch { }
-
-        // Возвращаем оригинальный ответ
-        memoryStream.Seek(0, SeekOrigin.Begin);
-        await memoryStream.CopyToAsync(originalBodyStream);
-    }
-    else
-    {
-        // Просто копируем ответ
-        memoryStream.Seek(0, SeekOrigin.Begin);
-        await memoryStream.CopyToAsync(originalBodyStream);
-    }
-});
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    OnPrepareResponse = ctx =>
-    {
-        Console.WriteLine($"Serving file: {ctx.File.Name}");
-    }
-});
-
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -172,21 +81,37 @@ else
     app.UseDeveloperExceptionPage();
 }
 
+
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecific");
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($">>> REQUEST: {context.Request.Method} {context.Request.Path}");
+
+    await next();
+
+    Console.WriteLine($"<<< RESPONSE: {context.Response.StatusCode} for {context.Request.Path}");
+
+    if (context.Response.StatusCode == 302 || context.Response.StatusCode == 301)
+    {
+        var location = context.Response.Headers["Location"].ToString();
+        Console.WriteLine($"!!! REDIRECT to: {location}");
+    }
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Маршрутизация для MVC
+app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Инициализация тестовых данных
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -199,7 +124,6 @@ using (var scope = app.Services.CreateScope())
         await context.Database.MigrateAsync();
 
         logger.LogInformation("Заполняем тестовыми данными...");
-
         var seedService = services.GetRequiredService<ISeedService>();
         await seedService.SeedAllDataAsync();
 

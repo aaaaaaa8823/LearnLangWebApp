@@ -24,23 +24,23 @@ async function loadLesson() {
     }
 
     if (!lessonType) {
-        lessonType = 'grammar'; 
+        lessonType = 'grammar';
     }
 
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/';
-            return;
-        }
-
         const apiUrl = lessonType === 'grammar'
             ? `/api/Grammar/topic/${lessonId}`
             : `/api/Vocab/topic/${lessonId}`;
 
         const response = await fetch(apiUrl, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include'
         });
+
+        if (response.status === 401) {
+            console.log('Not authorized');
+            container.innerHTML = '<div class="error">Необходимо войти в систему</div>';
+            return;
+        }
 
         if (!response.ok) {
             if (response.status === 404) {
@@ -51,7 +51,6 @@ async function loadLesson() {
 
         currentLesson = await response.json();
         console.log('Урок загружен:', currentLesson);
-
 
         prepareSections();
         displayLesson();
@@ -133,6 +132,7 @@ function prepareSections() {
         content: completeHtml
     });
 }
+
 function displayLesson() {
     const container = document.getElementById('lessonContainer');
 
@@ -213,8 +213,6 @@ async function markLessonComplete() {
     if (!currentLesson) return;
 
     try {
-        const token = localStorage.getItem('token');
-
         const apiUrl = lessonType === 'grammar'
             ? `/api/Grammar/topic/${currentLesson.id}/complete`
             : `/api/Vocab/topic/${currentLesson.id}/complete`;
@@ -222,10 +220,15 @@ async function markLessonComplete() {
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            credentials: 'include'
         });
+
+        if (response.status === 401) {
+            alert('Необходимо войти в систему');
+            return;
+        }
 
         if (!response.ok) {
             const error = await response.json();
@@ -233,7 +236,6 @@ async function markLessonComplete() {
         }
 
         alert('Урок отмечен как пройденный!');
-
         window.location.reload();
 
     } catch (error) {
@@ -273,7 +275,7 @@ function getExamplesContent(title) {
         ]
     };
 
-    return examplesMap[title] || [
+    const examples = examplesMap[title] || [
         'Пример 1 с переводом',
         'Пример 2 с переводом',
         'Пример 3 с переводом'
