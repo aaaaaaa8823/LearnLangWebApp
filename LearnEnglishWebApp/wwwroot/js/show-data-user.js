@@ -44,43 +44,65 @@ async function loadSidebarUser() {
     try {
         let user = localStorage.getItem('user');
 
+        if (user) {
+            user = JSON.parse(user);
+            const savedAt = localStorage.getItem('userSavedAt');
+            const oneHour = 60 * 60 * 1000;
+            if (savedAt && (Date.now() - parseInt(savedAt)) > oneHour) {
+                user = null; 
+            }
+        }
+
         if (!user) {
+            console.log('Запрашиваем данные пользователя с сервера...');
+
             const response = await fetch('/api/Profile/me', {
-                credentials: 'include'
+                credentials: 'include',  
+                headers: {
+                    'Accept': 'application/json'
+                }
             });
 
             if (!response.ok) {
                 if (response.status === 401) {
                     localStorage.removeItem('user');
                     localStorage.removeItem('userRole');
+                    localStorage.removeItem('userSavedAt');
+                    userNameElement.textContent = 'Гость';
+                    userInitialsElement.textContent = '?';
+                    userLevelElement.textContent = 'A1';
                     return;
                 }
                 throw new Error('Ошибка загрузки');
             }
 
             user = await response.json();
+            console.log('Получены данные пользователя:', user);
+
             localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('userSavedAt', Date.now().toString());
 
             if (user.role) {
                 localStorage.setItem('userRole', user.role);
             }
-        } else {
-            user = JSON.parse(user);
         }
 
-        userNameElement.textContent = user.userName || user.username;
-        userInitialsElement.textContent = (user.userName || user.username)[0].toUpperCase();
-        userLevelElement.textContent = user.level || 'A1';
+        const displayName = user.userName || user.username || 'Пользователь';
+        const displayLevel = user.level || 'A1';
+
+        userNameElement.textContent = displayName;
+        userInitialsElement.textContent = displayName.charAt(0).toUpperCase();
+        userLevelElement.textContent = displayLevel;
 
         toggleMenuByRole();
-        redirectAdmin();
 
     } catch (error) {
         console.error('Ошибка загрузки пользователя:', error);
         userNameElement.textContent = 'Ошибка';
+        userInitialsElement.textContent = '!';
+        userLevelElement.textContent = 'A1';
     }
 }
-
 
 async function loadAccountPage() {
     const container = document.getElementById('profileContainer');
@@ -94,9 +116,21 @@ async function loadAccountPage() {
     try {
         let user = localStorage.getItem('user');
 
+        if (user) {
+            user = JSON.parse(user);
+            const savedAt = localStorage.getItem('userSavedAt');
+            const oneHour = 60 * 60 * 1000;
+            if (savedAt && (Date.now() - parseInt(savedAt)) > oneHour) {
+                user = null;
+            }
+        }
+
         if (!user) {
             const response = await fetch('/api/Profile/me', {
-                credentials: 'include'
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json'
+                }
             });
 
             if (!response.ok) {
@@ -109,12 +143,11 @@ async function loadAccountPage() {
 
             user = await response.json();
             localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('userSavedAt', Date.now().toString());
 
             if (user.role) {
                 localStorage.setItem('userRole', user.role);
             }
-        } else {
-            user = JSON.parse(user);
         }
 
         container.innerHTML = `
@@ -125,14 +158,14 @@ async function loadAccountPage() {
                     <div class="form-group">
                         <label for="username">Имя пользователя</label>
                         <input type="text" id="username" name="username" 
-                               value="${escapeHtml(user.userName || user.username)}" 
+                               value="${escapeHtml(user.userName || user.username || '')}" 
                                class="form-input" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" 
-                               value="${escapeHtml(user.email)}" 
+                               value="${escapeHtml(user.email || '')}" 
                                class="form-input" required>
                     </div>
                     
@@ -239,11 +272,14 @@ async function updateProfile(event) {
         console.log('Обновленные данные:', updatedUser);
 
         localStorage.setItem('user', JSON.stringify(updatedUser));
+        localStorage.setItem('userSavedAt', Date.now().toString());
+
         if (updatedUser.role) {
             localStorage.setItem('userRole', updatedUser.role);
         }
 
         await loadSidebarUser();
+
         showMessage('Профиль успешно обновлен!', 'success');
 
         document.getElementById('currentPassword').value = '';
@@ -263,3 +299,21 @@ async function updateProfile(event) {
 function cancelEdit() {
     loadAccountPage();
 }
+
+function logout() {
+    fetch('/api/Profile/logout', {
+        method: 'POST',
+        credentials: 'include'
+    }).finally(() => {
+        localStorage.removeItem('user');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userSavedAt');
+        window.location.href = '/';
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('userName')) {
+        loadSidebarUser();
+    }
+});
