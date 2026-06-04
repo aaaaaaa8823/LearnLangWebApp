@@ -9,22 +9,16 @@ namespace LearnEnglishWebApp.Controllers
         public IActionResult Index()
         {
             ViewBag.ShowSidebar = true;
-            return View(); 
+            return View();
         }
 
-        public IActionResult ManageLessons()
+        public IActionResult ManageContent()
         {
             ViewBag.ShowSidebar = true;
             return View();
         }
 
-        public IActionResult ManageTests()
-        {
-            ViewBag.ShowSidebar = true;
-            return View();
-        }
-
-        public IActionResult ManageWords()
+        public IActionResult ManageUsers()
         {
             ViewBag.ShowSidebar = true;
             return View();

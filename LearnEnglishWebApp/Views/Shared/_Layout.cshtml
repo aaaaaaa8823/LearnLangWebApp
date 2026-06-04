@@ -44,14 +44,11 @@
                 </div>
 
                 <div id="adminMenu" style="display: none;">
-                    <a href="/Admin/ManageLessons" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "ManageLessons" ? "active" : "")">
-                        Управление уроками
+                    <a href="/Admin/ManageContent" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "ManageContent" ? "active" : "")">
+                        Управление контентом
                     </a>
-                    <a href="/Admin/ManageTests" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "ManageTests" ? "active" : "")">
-                        Управление тестами
-                    </a>
-                    <a href="/Admin/ManageWords" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "ManageWords" ? "active" : "")">
-                        Управление словарем
+                    <a href="/Admin/ManageUsers" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "ManageUsers" ? "active" : "")">
+                        Управление пользователями
                     </a>
                     <a href="/Home/Account" class="nav-item">
                         Настройки аккаунта
