@@ -1,1 +1,29 @@
-﻿
+﻿@{
+    ViewData["Title"] = "Управление контентом";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="admin-page">
+    <h1>Управление контентом</h1>
+
+    <div class="admin-cards">
+        <div class="admin-card" onclick="location.href='/Admin/ManageWords'">
+            <h3>Управление словарём</h3>
+            <p>Пополните словарь новыми интересными словами.</p>
+        </div>
+
+        <div class="admin-card" onclick="location.href='/Admin/ManageLessons'">
+            <h3>Управление уроками</h3>
+            <p>Создавайте доходчивые и увлекательные уроки.</p>
+        </div>
+
+        <div class="admin-card" onclick="location.href='/Admin/ManageTests'">
+            <h3>Управление тестами</h3>
+            <p>Создавайте лучшие тесты для наших пользователей.</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+}
