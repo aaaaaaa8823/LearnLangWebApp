@@ -1,1 +1,89 @@
-﻿
+﻿@{
+    ViewData["Title"] = "Управление словарём";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="admin-manage-page">
+    <h1>Управление словарём</h1>
+    <div class="page-description">Добавление, редактирование и удаление слов</div>
+
+    <div id="messageArea"></div>
+
+    <div class="list-section">
+        <div class="list-header">
+            <h2>Список слов</h2>
+            <span class="item-count" id="wordsCount">0</span>
+        </div>
+        <div id="wordsList">
+            <div class="loading">Загрузка...</div>
+        </div>
+    </div>
+
+
+    <div class="form-section">
+        <h2 id="formTitle">Добавить новое слово</h2>
+        <form id="wordForm">
+            <input type="hidden" id="wordId" value="0">
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="word">Слово *</label>
+                    <input type="text" id="word" name="word" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="translation">Перевод *</label>
+                    <input type="text" id="translation" name="translation" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="partOfSpeech">Часть речи</label>
+                    <select id="partOfSpeech">
+                        <option value="">Выберите</option>
+                        <option value="noun">Существительное (noun)</option>
+                        <option value="verb">Глагол (verb)</option>
+                        <option value="adjective">Прилагательное (adjective)</option>
+                        <option value="adverb">Наречие (adverb)</option>
+                        <option value="interjection">Междометие (interjection)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="difficultyLevel">Уровень сложности</label>
+                    <select id="difficultyLevel">
+                        <option value="A1">A1 - Начальный</option>
+                        <option value="A2">A2 - Элементарный</option>
+                        <option value="B1">B1 - Средний</option>
+                        <option value="B2">B2 - Выше среднего</option>
+                        <option value="C1">C1 - Продвинутый</option>
+                        <option value="C2">C2 - Профессиональный</option>
+                    </select>
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label for="definition">Определение</label>
+                    <textarea id="definition" rows="3" placeholder="Определение слова на английском..."></textarea>
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label>Примеры использования</label>
+                    <div class="examples-input">
+                        <input type="text" id="exampleInput" placeholder="Пример использования">
+                        <button type="button" class="btn-add-example" onclick="addExample()">+ Добавить</button>
+                    </div>
+                    <div id="examplesList" class="examples-list"></div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Сохранить</button>
+                <button type="button" class="btn-cancel" onclick="resetForm()">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <script src="~/js/admin-words.js" asp-append-version="true"></script>
+}
