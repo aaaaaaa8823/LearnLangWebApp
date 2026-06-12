@@ -402,3 +402,31 @@
     gap: 15px;
 }
 
+/* Переключатель типов уроков */
+.lesson-type-switch {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.type-btn {
+    padding: 10px 24px;
+    background: white;
+    border: 1px solid #e0e5ec;
+    border-radius: 30px;
+    text-decoration: none;
+    color: #6b7a8f;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.type-btn.active {
+    background: #1a3b5d;
+    border-color: #1a3b5d;
+    color: white;
+}
+
+.type-btn:hover:not(.active) {
+    background: #eef2f6;
+    border-color: #1a3b5d;
+}
