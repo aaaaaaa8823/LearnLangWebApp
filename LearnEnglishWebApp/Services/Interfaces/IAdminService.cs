@@ -9,6 +9,7 @@ namespace LearnEnglishWebApp.Services.Interfaces
         Task<IEnumerable<WordDto>> GetAllWordsAsync();
         Task<WordDto> GetWordByIdAsync(long id);
         Task<WordDto> AddWordAsync(AddWordDto dto);
+        Task<WordDto> UpdateWordAsync(long id, UpdateWordDto dto);
         Task<bool> DeleteWordAsync(long id);
 
         //граммар уроки
