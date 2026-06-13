@@ -3,6 +3,7 @@ using LearnEnglishWebApp.DTOs.Request;
 using LearnEnglishWebApp.DTOs.Response;
 using LearnEnglishWebApp.Models;
 using LearnEnglishWebApp.Services.Interfaces;
+using System.Text.Json;
 
 namespace LearnEnglishWebApp.Services.Implementations
 {
@@ -115,6 +116,8 @@ namespace LearnEnglishWebApp.Services.Implementations
                 Level = dto.Level,
                 Title = dto.Title,
                 Description = dto.Description,
+                TheoryContent = dto.TheoryContent,
+                ExamplesContent = dto.ExamplesContent,
                 OrderIndex = dto.OrderIndex,
                 CreatedAt = DateTime.UtcNow
             };
@@ -136,6 +139,8 @@ namespace LearnEnglishWebApp.Services.Implementations
             topic.Title = dto.Title;
             topic.Description = dto.Description;
             topic.OrderIndex = dto.OrderIndex;
+            topic.TheoryContent = dto.TheoryContent;
+            topic.ExamplesContent = dto.ExamplesContent;
 
             _repository.UpdateGrammarTopic(topic);
             await _repository.SaveChangesAsync();
@@ -257,6 +262,8 @@ namespace LearnEnglishWebApp.Services.Implementations
                 Title = dto.Title,
                 Description = dto.Description,
                 OrderIndex = dto.OrderIndex,
+                TheoryContent = dto.TheoryContent,
+                ExamplesContent = dto.ExamplesContent,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
@@ -278,6 +285,8 @@ namespace LearnEnglishWebApp.Services.Implementations
             lesson.Title = dto.Title;
             lesson.Description = dto.Description;
             lesson.OrderIndex = dto.OrderIndex;
+            lesson.TheoryContent = dto.TheoryContent;
+            lesson.ExamplesContent = dto.ExamplesContent;
 
             _repository.UpdateVocabLesson(lesson);
             await _repository.SaveChangesAsync();
@@ -406,6 +415,8 @@ namespace LearnEnglishWebApp.Services.Implementations
                 Title = topic.Title,
                 Description = topic.Description,
                 OrderIndex = topic.OrderIndex,
+                TheoryContent = topic.TheoryContent,
+                ExamplesContent = topic.ExamplesContent,
                 CreatedAt = topic.CreatedAt,
                 IsCompleted = false,
                 Tests = topic.GrammarTests?.Select(t => new GrammarTestDto
@@ -444,6 +455,8 @@ namespace LearnEnglishWebApp.Services.Implementations
                 Title = lesson.Title,
                 Description = lesson.Description ?? "",
                 OrderIndex = lesson.OrderIndex,
+                TheoryContent = lesson.TheoryContent,
+                ExamplesContent = lesson.ExamplesContent,
                 CreatedAt = lesson.CreatedAt,
                 IsCompleted = false,
                 Tests = lesson.VocabTests?.Select(t => new VocabTestDto

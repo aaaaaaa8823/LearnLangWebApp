@@ -10,6 +10,8 @@
         public DateTime CreatedAt { get; set; }
         public bool IsCompleted { get; set; }
         public DateTime? CompletedAt { get; set; }
+        public string TheoryContent { get; set; }
+        public string ExamplesContent { get; set; }
         public List<VocabTestDto> Tests { get; set; } = new List<VocabTestDto>();
     }
 
