@@ -148,6 +148,8 @@ namespace LearnEnglishWebApp.Services.Implementations
                 CreatedAt = topic.CreatedAt,
                 IsCompleted = isCompleted,
                 CompletedAt = completedAt,
+                TheoryContent = topic.TheoryContent,
+                ExamplesContent = topic.ExamplesContent,
                 Tests = topic.GrammarTests?.Select(t => new GrammarTestDto
                 {
                     Id = t.Id,

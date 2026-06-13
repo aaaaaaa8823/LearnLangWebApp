@@ -61,19 +61,75 @@ async function loadLesson() {
     }
 }
 
+function formatTheoryContent(content) {
+    if (!content) return '<p>Нет содержания</p>';
+
+    let html = content;
+
+    html = html.replace(/^(.+?)\n={3,}$/gm, '<h1>$1</h1>');
+    html = html.replace(/^(#{1,3})\s+(.+)$/gm, (match, hashes, text) => {
+        const level = hashes.length;
+        return `<h${level}>${text}</h${level}>`;
+    });
+
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+ 
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+    html = html.replace(/^- (.*)$/gm, '<li>$1</li>');
+    html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+    const paragraphs = html.split('\n\n');
+    html = paragraphs.map(p => {
+        if (p.startsWith('<h') || p.startsWith('<ul') || p.startsWith('<li')) {
+            return p;
+        }
+        return `<p>${p.replace(/\n/g, '<br>')}</p>`;
+    }).join('');
+
+    return html;
+}
+
+function formatExamplesContent(content) {
+    if (!content) return '<p>Нет примеров</p>';
+
+    const lines = content.split('\n').filter(line => line.trim());
+    if (lines.length === 0) return '<p>Нет примеров</p>';
+
+    return `<ul class="examples-list">${lines.map(line => `<li>${escapeHtml(line)}</li>`).join('')}</ul>`;
+}
+
+function getDefaultTheoryContent(title) {
+    return `# ${title}
+
+Содержание урока будет добавлено позже.
+
+Здесь будет представлена теория по данной теме с примерами и объяснениями.`;
+}
+
+function getDefaultExamplesContent(title) {
+    return `Пример 1 с переводом
+Пример 2 с переводом
+Пример 3 с переводом`;
+}
+
 function prepareSections() {
     sections = [];
 
+    const theoryContent = currentLesson.theoryContent || getDefaultTheoryContent(currentLesson.title);
     sections.push({
         id: 'theory',
         title: 'Теория',
-        content: getTheoryContent(currentLesson.title)
+        content: `<div class="theory-content">${formatTheoryContent(theoryContent)}</div>`
     });
 
+
+    const examplesContent = currentLesson.examplesContent || getDefaultExamplesContent(currentLesson.title);
     sections.push({
         id: 'examples',
         title: 'Примеры',
-        content: getExamplesContent(currentLesson.title)
+        content: `<div class="examples-content">${formatExamplesContent(examplesContent)}</div>`
     });
 
     const testsHtml = currentLesson.tests && currentLesson.tests.length > 0
@@ -246,102 +302,6 @@ async function markLessonComplete() {
 
 function startTest(testId) {
     window.location.href = `/Home/TestDetail?id=${testId}&type=${lessonType}`;
-}
-
-function getExamplesContent(title) {
-    const examplesMap = {
-        'Present Simple': [
-            'I work every day. (Я работаю каждый день)',
-            'She works in an office. (Она работает в офисе)',
-            'Water boils at 100 degrees. (Вода кипит при 100 градусах)'
-        ],
-        'Past Simple': [
-            'I worked yesterday. (Я работал вчера)',
-            'She went to London last year. (Она ездила в Лондон в прошлом году)'
-        ],
-        'Future Simple': [
-            'I will call you tomorrow. (Я позвоню тебе завтра)',
-            'She will be here soon. (Она скоро будет здесь)'
-        ],
-        'My Daily Routine': [
-            'I wake up at 7 AM every day. (Я просыпаюсь в 7 утра каждый день)',
-            'I have breakfast at 8 AM. (Я завтракаю в 8 утра)',
-            'I go to work at 9 AM. (Я иду на работу в 9 утра)'
-        ],
-        'My Family': [
-            'I have a big family. (У меня большая семья)',
-            'My mother is a doctor. (Моя мама врач)',
-            'My father works in an office. (Мой папа работает в офисе)'
-        ]
-    };
-
-    const examples = examplesMap[title] || [
-        'Пример 1 с переводом',
-        'Пример 2 с переводом',
-        'Пример 3 с переводом'
-    ];
-
-    return `<ul class="examples-list">${examples.map(ex => `<li>${escapeHtml(ex)}</li>`).join('')}</ul>`;
-}
-
-function getTheoryContent(title) {
-    const contentMap = {
-        'Present Simple': `
-            <p><strong>Present Simple (настоящее простое время)</strong> используется для обозначения:</p>
-            <ul>
-                <li>Обычных, повторяющихся действий</li>
-                <li>Фактов и общих истин</li>
-                <li>Расписаний и графиков</li>
-            </ul>
-            <h3>Образование утвердительных предложений:</h3>
-            <p>I/You/We/They + глагол (без окончания)<br>
-            He/She/It + глагол + s/es</p>
-        `,
-        'Past Simple': `
-            <p><strong>Past Simple (прошедшее простое время)</strong> используется для обозначения действий, которые произошли в прошлом.</p>
-            <h3>Правильные глаголы:</h3>
-            <p>глагол + ed (work → worked)</p>
-        `,
-        'Future Simple': `
-            <p><strong>Future Simple (будущее простое время)</strong> используется для обозначения действий, которые произойдут в будущем.</p>
-            <h3>Образование:</h3>
-            <p>will + глагол (без частицы to)</p>
-        `,
-        'My Daily Routine': `
-            <p><strong>Daily Routine (повседневные дела)</strong> - это действия, которые мы выполняем каждый день.</p>
-            <h3>Основные глаголы:</h3>
-            <ul>
-                <li>wake up - просыпаться</li>
-                <li>get dressed - одеваться</li>
-                <li>have breakfast - завтракать</li>
-                <li>go to work/school - идти на работу/в школу</li>
-                <li>have lunch - обедать</li>
-                <li>come home - возвращаться домой</li>
-                <li>have dinner - ужинать</li>
-                <li>go to bed - ложиться спать</li>
-            </ul>
-        `,
-        'My Family': `
-            <p><strong>Family (семья)</strong> - это самые близкие люди.</p>
-            <h3>Члены семьи:</h3>
-            <ul>
-                <li>mother/mom - мама</li>
-                <li>father/dad - папа</li>
-                <li>brother - брат</li>
-                <li>sister - сестра</li>
-                <li>grandmother - бабушка</li>
-                <li>grandfather - дедушка</li>
-                <li>aunt - тётя</li>
-                <li>uncle - дядя</li>
-                <li>cousin - двоюродный брат/сестра</li>
-            </ul>
-        `
-    };
-
-    return contentMap[title] || `
-        <p>Содержание урока "${title}" будет добавлено позже.</p>
-        <p>Здесь будет представлена теория по данной теме с примерами и объяснениями.</p>
-    `;
 }
 
 function escapeHtml(text) {

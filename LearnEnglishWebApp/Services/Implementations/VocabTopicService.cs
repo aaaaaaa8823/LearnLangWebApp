@@ -132,6 +132,8 @@ namespace LearnEnglishWebApp.Services.Implementations
                 CreatedAt = lesson.CreatedAt,
                 IsCompleted = isCompleted,
                 CompletedAt = completedAt,
+                TheoryContent = lesson.TheoryContent,
+                ExamplesContent = lesson.ExamplesContent,
                 Tests = lesson.VocabTests?.Select(t => new VocabTestDto
                 {
                     Id = t.Id,

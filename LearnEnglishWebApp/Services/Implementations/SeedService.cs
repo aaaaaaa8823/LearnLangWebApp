@@ -26,7 +26,9 @@ namespace LearnEnglishWebApp.Services.Implementations
                 await SeedDictionaryAsync();
                 await SeedGrammarTopicsAsync();
                 await SeedVocabLessonsAsync();
-                await SeedVocabTestsAsync(); 
+                await SeedVocabTestsAsync();
+                await UpdateGrammarTopicsContentAsync();
+                await UpdateVocabLessonsContentAsync();
 
                 _logger.LogInformation("Заполнение завершено");
             }
@@ -384,6 +386,158 @@ namespace LearnEnglishWebApp.Services.Implementations
             await CreateDefaultCollectionsForUser(admin.Id);
 
             _logger.LogInformation("Администратор создан: Email=admin@learnenglish.com, Пароль=Admin123!");
+        }
+
+        private async Task UpdateGrammarTopicsContentAsync()
+        {
+            _logger.LogInformation("Обновляем контент грамматических уроков...");
+
+            var presentSimple = await _context.GrammarTopics
+                .FirstOrDefaultAsync(t => t.Title == "Present Simple");
+
+            if (presentSimple != null && string.IsNullOrEmpty(presentSimple.TheoryContent))
+            {
+                presentSimple.TheoryContent = @"Present Simple (настоящее простое время)
+
+Когда используется:
+- Обычные, повторяющиеся действия
+- Факты и общие истины
+- Расписания и графики
+
+Образование утвердительных предложений:
+I/You/We/They + глагол (без окончания)
+He/She/It + глагол + s/es
+
+Образование отрицательных предложений:
+I/You/We/They + do not (don't) + глагол
+He/She/It + does not (doesn't) + глагол
+
+Образование вопросительных предложений:
+Do/Does + подлежащее + глагол?";
+
+                presentSimple.ExamplesContent = @"I work every day.
+She works in an office.
+Water boils at 100 degrees.
+The train leaves at 6 PM.";
+
+                _context.GrammarTopics.Update(presentSimple);
+            }
+
+            var pastSimple = await _context.GrammarTopics
+                .FirstOrDefaultAsync(t => t.Title == "Past Simple");
+
+            if (pastSimple != null && string.IsNullOrEmpty(pastSimple.TheoryContent))
+            {
+                pastSimple.TheoryContent = @"Past Simple (прошедшее простое время)
+
+Когда используется:
+- Действия, которые произошли в прошлом
+- Последовательные действия в прошлом
+
+Правильные глаголы:
+глагол + ed (work → worked)
+
+Неправильные глаголы:
+используется 2-я форма глагола (go → went)";
+
+                pastSimple.ExamplesContent = @"I worked yesterday.
+She went to London last year.
+They watched a movie yesterday.";
+
+                _context.GrammarTopics.Update(pastSimple);
+            }
+
+            var futureSimple = await _context.GrammarTopics
+                .FirstOrDefaultAsync(t => t.Title == "Future Simple");
+
+            if (futureSimple != null && string.IsNullOrEmpty(futureSimple.TheoryContent))
+            {
+                futureSimple.TheoryContent = @"Future Simple (будущее простое время)
+
+Когда используется:
+- Действия, которые произойдут в будущем
+- Спонтанные решения
+- Предсказания
+
+Образование:
+will + глагол (без частицы to)";
+
+                futureSimple.ExamplesContent = @"I will call you tomorrow.
+She will be here soon.
+It will rain later.";
+
+                _context.GrammarTopics.Update(futureSimple);
+            }
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Контент грамматических уроков обновлён");
+        }
+
+        private async Task UpdateVocabLessonsContentAsync()
+        {
+            _logger.LogInformation("Обновляем контент вокабулярных уроков...");
+
+            var dailyRoutine = await _context.VocabLessons
+                .FirstOrDefaultAsync(l => l.Title == "My Daily Routine");
+
+            if (dailyRoutine != null && string.IsNullOrEmpty(dailyRoutine.TheoryContent))
+            {
+                dailyRoutine.TheoryContent = @"Daily Routine (повседневные дела)
+
+Повседневные дела - это действия, которые мы выполняем каждый день.
+
+Основные глаголы:
+- wake up - просыпаться
+- get dressed - одеваться
+- have breakfast - завтракать
+- go to work/school - идти на работу/в школу
+- have lunch - обедать
+- come home - возвращаться домой
+- have dinner - ужинать
+- go to bed - ложиться спать";
+
+                dailyRoutine.ExamplesContent = @"I wake up at 7 AM every day.
+I have breakfast at 8 AM.
+I go to work at 9 AM.
+I have lunch at 1 PM.
+I come home at 6 PM.
+I have dinner at 7 PM.
+I go to bed at 11 PM.";
+
+                _context.VocabLessons.Update(dailyRoutine);
+            }
+
+            var myFamily = await _context.VocabLessons
+                .FirstOrDefaultAsync(l => l.Title == "My Family");
+
+            if (myFamily != null && string.IsNullOrEmpty(myFamily.TheoryContent))
+            {
+                myFamily.TheoryContent = @"Family (семья)
+
+Семья - это самые близкие люди.
+
+Члены семьи:
+- mother/mom - мама
+- father/dad - папа
+- brother - брат
+- sister - сестра
+- grandmother - бабушка
+- grandfather - дедушка
+- aunt - тётя
+- uncle - дядя
+- cousin - двоюродный брат/сестра";
+
+                myFamily.ExamplesContent = @"I have a big family.
+My mother is a doctor.
+My father works in an office.
+I have two brothers and one sister.
+My grandmother lives with us.";
+
+                _context.VocabLessons.Update(myFamily);
+            }
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Контент вокабулярных уроков обновлён");
         }
 
         private async Task CreateDefaultCollectionsForUser(long userId)
