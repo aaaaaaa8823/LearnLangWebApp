@@ -19,6 +19,9 @@ namespace LearnEnglishWebApp.Models
         [MaxLength(500)]
         public string Description { get; set; }
 
+        public string? TheoryContent { get; set; }  
+        public string? ExamplesContent { get; set; }
+
         public int OrderIndex { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

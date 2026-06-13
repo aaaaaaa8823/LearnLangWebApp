@@ -3,6 +3,7 @@ using System;
 using LearnEnglishWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LearnEnglishWebApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260613104912_AddLessonContentFields")]
+    partial class AddLessonContentFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,9 +187,6 @@ namespace LearnEnglishWebApp.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<string>("ExamplesContent")
-                        .HasColumnType("text");
-
                     b.Property<string>("Level")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -194,9 +194,6 @@ namespace LearnEnglishWebApp.Migrations
 
                     b.Property<int>("OrderIndex")
                         .HasColumnType("integer");
-
-                    b.Property<string>("TheoryContent")
-                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .IsRequired()
