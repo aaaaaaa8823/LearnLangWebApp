@@ -1,1 +1,104 @@
-﻿
+﻿@{
+    ViewData["Title"] = ViewBag.LessonType == "vocab" ? "Управление вокабулярными уроками" : "Управление грамматическими уроками";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var lessonType = ViewBag.LessonType ?? "grammar";
+    var title = lessonType == "vocab" ? "Управление вокабулярными уроками" : "Управление грамматическими уроками";
+}
+
+<div class="admin-manage-page">
+    <h1>@title</h1>
+
+    <div class="lesson-type-switch">
+        <a href="/Admin/ManageLessons?type=grammar" class="type-btn @(lessonType == "grammar" ? "active" : "")">Грамматика</a>
+        <a href="/Admin/ManageLessons?type=vocab" class="type-btn @(lessonType == "vocab" ? "active" : "")">Вокабуляр</a>
+    </div>
+
+    <div id="messageArea"></div>
+
+    <div class="list-section">
+        <div class="list-header">
+            <h2>Список уроков</h2>
+            <span class="item-count" id="lessonsCount">0</span>
+        </div>
+        <div id="lessonsList">
+            <div class="loading">Загрузка...</div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2 id="formTitle">Добавить новый урок</h2>
+        <form id="lessonForm">
+            <input type="hidden" id="lessonId" value="0">
+            <input type="hidden" id="lessonType" value="@lessonType">
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="level">Уровень *</label>
+                    <select id="level" required>
+                        <option value="A1">A1 - Начальный</option>
+                        <option value="A2">A2 - Элементарный</option>
+                        <option value="B1">B1 - Средний</option>
+                        <option value="B2">B2 - Выше среднего</option>
+                        <option value="C1">C1 - Продвинутый</option>
+                        <option value="C2">C2 - Профессиональный</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderIndex">Порядковый номер</label>
+                    <input type="number" id="orderIndex" value="0" min="0">
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label for="title">Название урока *</label>
+                    <input type="text" id="title" required placeholder="Например: Present Simple">
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label for="description">Краткое описание (для карточки)</label>
+                    <textarea id="description" rows="2" placeholder="Краткое описание урока..."></textarea>
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label for="theoryContent">Теория</label>
+                    <div class="markdown-hint">
+                        <span># Заголовок 1</span>
+                        <span>## Заголовок 2</span>
+                        <span>**жирный**</span>
+                        <span>*курсив*</span>
+                        <span>- пункт списка</span>
+                    </div>
+                    <textarea id="theoryContent" rows="10" placeholder="# Название темы
+
+**Present Simple** используется для:
+
+- Обычных, повторяющихся действий
+- Фактов и общих истин
+
+## Образование
+I/You/We/They + глагол
+He/She/It + глагол + s"></textarea>
+                    <div id="theoryPreview" class="preview-box" style="display: none;"></div>
+                    <button type="button" class="btn-preview" onclick="togglePreview()">Предпросмотр</button>
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label for="examplesContent">Примеры (каждый с новой строки)</label>
+                    <textarea id="examplesContent" rows="4" placeholder="I work every day.
+She works in an office.
+Water boils at 100 degrees."></textarea>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Сохранить</button>
+                <button type="button" class="btn-cancel" onclick="resetForm()">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <script src="~/js/admin-lesson.js" asp-append-version="true"></script>
+}

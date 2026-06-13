@@ -55,20 +55,17 @@
     font-size: 0.9rem;
 }
 
-/* wwwroot/css/admin-manage.css */
-
-/* Основные стили */
 .admin-manage-page {
     padding: 30px;
     max-width: 1400px;
     margin: 0 auto;
 }
 
-    .admin-manage-page h1 {
-        color: #1a3b5d;
-        margin-bottom: 10px;
-        font-size: 2rem;
-    }
+.admin-manage-page h1 {
+    color: #1a3b5d;
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
 
 .page-description {
     color: #6b7a8f;
@@ -77,7 +74,6 @@
     border-bottom: 1px solid #eef2f6;
 }
 
-/* Раздел со списком */
 .list-section {
     background: white;
     border-radius: 16px;
@@ -95,11 +91,11 @@
     border-bottom: 1px solid #eef2f6;
 }
 
-    .list-header h2 {
-        color: #1a3b5d;
-        font-size: 1.3rem;
-        margin: 0;
-    }
+.list-header h2 {
+    color: #1a3b5d;
+    font-size: 1.3rem;
+    margin: 0;
+}
 
 .item-count {
     background: #1a3b5d;
@@ -109,32 +105,30 @@
     font-size: 0.8rem;
 }
 
-/* Таблица */
 .data-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-    .data-table th {
-        text-align: left;
-        padding: 15px 20px;
-        background: #f8fafd;
-        color: #1a3b5d;
-        font-weight: 600;
-        border-bottom: 1px solid #eef2f6;
-    }
+.data-table th {
+    text-align: left;
+    padding: 15px 20px;
+    background: #f8fafd;
+    color: #1a3b5d;
+    font-weight: 600;
+    border-bottom: 1px solid #eef2f6;
+}
 
-    .data-table td {
-        padding: 12px 20px;
-        border-bottom: 1px solid #eef2f6;
-        color: #4a5568;
-    }
+.data-table td {
+    padding: 12px 20px;
+    border-bottom: 1px solid #eef2f6;
+    color: #4a5568;
+}
 
-    .data-table tr:hover {
-        background: #f8fafd;
-    }
+.data-table tr:hover {
+    background: #f8fafd;
+}
 
-/* Кнопки действий */
 .btn-edit {
     background: #ff9800;
     color: white;
@@ -147,9 +141,9 @@
     transition: background 0.3s;
 }
 
-    .btn-edit:hover {
-        background: #f57c00;
-    }
+.btn-edit:hover {
+    background: #f57c00;
+}
 
 .btn-delete {
     background: #f44336;
@@ -162,11 +156,10 @@
     transition: background 0.3s;
 }
 
-    .btn-delete:hover {
-        background: #d32f2f;
-    }
+.btn-delete:hover {
+    background: #d32f2f;
+}
 
-/* Раздел с формой */
 .form-section {
     background: white;
     border-radius: 16px;
@@ -175,13 +168,13 @@
     margin-bottom: 30px;
 }
 
-    .form-section h2 {
-        color: #1a3b5d;
-        font-size: 1.3rem;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #eef2f6;
-    }
+.form-section h2 {
+    color: #1a3b5d;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eef2f6;
+}
 
 .form-grid {
     display: grid;
@@ -193,38 +186,38 @@
     margin-bottom: 15px;
 }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 500;
-        color: #1a3b5d;
-        font-size: 0.9rem;
-    }
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #1a3b5d;
+    font-size: 0.9rem;
+}
 
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #e0e5ec;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        transition: all 0.3s;
-        box-sizing: border-box;
-    }
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #1a3b5d;
-            box-shadow: 0 0 0 3px rgba(26, 59, 93, 0.1);
-        }
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #1a3b5d;
+    box-shadow: 0 0 0 3px rgba(26, 59, 93, 0.1);
+}
 
-    .form-group textarea {
-        resize: vertical;
-        min-height: 80px;
-    }
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
 
 .form-group-full {
     grid-column: span 2;
@@ -237,9 +230,9 @@
     align-items: center;
 }
 
-    .examples-input input {
-        flex: 1;
-    }
+.examples-input input {
+    flex: 1;
+}
 
 .btn-add-example {
     padding: 10px 15px;
@@ -267,13 +260,13 @@
     gap: 8px;
 }
 
-    .example-tag .remove {
-        color: #f44336;
-        cursor: pointer;
-        font-weight: bold;
-    }
+.example-tag .remove {
+    color: #f44336;
+    cursor: pointer;
+    font-weight: bold;
+}
 
-/* Кнопки формы */
+
 .form-actions {
     display: flex;
     gap: 15px;
@@ -402,7 +395,6 @@
     gap: 15px;
 }
 
-/* Переключатель типов уроков */
 .lesson-type-switch {
     display: flex;
     gap: 10px;
@@ -430,3 +422,62 @@
     background: #eef2f6;
     border-color: #1a3b5d;
 }
+
+.toolbar {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+    padding: 8px;
+    background: #f8fafd;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+    flex-wrap: wrap;
+}
+
+.toolbar button {
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #e0e5ec;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.toolbar button:hover {
+    background: #eef2f6;
+    border-color: #1a3b5d;
+}
+
+.markdown-hint {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    background: #f8fafd;
+    border-radius: 8px;
+    border: 1px solid #eef2f6;
+}
+
+
+.btn-preview {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: #eef2f6;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+    color: #1a3b5d;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-preview:hover {
+    background: #e4e8ef;
+    border-color: #1a3b5d;
+}
+
