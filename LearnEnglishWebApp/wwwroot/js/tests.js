@@ -49,6 +49,7 @@ function displayTests(tests) {
             <div class="test-card ${cardClass}" onclick="startTest(${test.id})">
                 <div class="test-header">
                     <span class="test-level">${escapeHtml(test.level)}</span>
+                    <span class="test-topic">${escapeHtml(test.topicTitle || 'Грамматика')}</span>
                     <span class="test-type grammar">Грамматика</span>
                     ${statusBadge}
                 </div>

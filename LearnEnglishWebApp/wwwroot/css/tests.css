@@ -236,3 +236,11 @@
     background: #ff9800;
     color: white;
 }
+
+.test-topic {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: #1a3b5d;
+    margin-left: 8px;
+}

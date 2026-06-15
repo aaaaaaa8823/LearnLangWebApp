@@ -39,17 +39,21 @@ async function loadTest() {
         }
 
         currentTest = await response.json();
+
+        // Проверяем, есть ли вопросы
+        if (!currentTest.questions || currentTest.questions.length === 0) {
+            console.log('В тесте нет вопросов');
+            container.innerHTML = '<div class="error">В тесте нет вопросов. Обратитесь к администратору.</div>';
+            return;
+        }
+
+        console.log('Загружен тест:', currentTest);
+        console.log('Количество вопросов:', currentTest.questions.length);
+
+        currentTest.questionCount = currentTest.questions.length;
         currentRemainingSeconds = currentTest.timeLimitMinutes * 60;
         startTime = Date.now();
         startTimer();
-
-        if (!currentTest.questions || currentTest.questions.length === 0) {
-            console.log('Нет вопросов, используем мок-вопросы');
-            currentTest.questions = getMockQuestions();
-            currentTest.questionCount = currentTest.questions.length;
-            currentTest.passingScore = 60;
-            currentTest.timeLimitMinutes = 10;
-        }
 
         displayQuestion();
 
@@ -151,22 +155,6 @@ function displayQuestion() {
             </div>
         </div>
     `;
-}
-
-function skipQuestion() {
-    if (!userAnswers[currentQuestionIndex]) {
-        userAnswers[currentQuestionIndex] = {};
-    }
-    userAnswers[currentQuestionIndex].selectedOption = undefined;
-
-    if (currentQuestionIndex < currentTest.questions.length - 1) {
-        currentQuestionIndex++;
-        displayQuestion();
-    } else {
-        if (confirm('Вы пропустили последний вопрос. Завершить тест?')) {
-            submitTest();
-        }
-    }
 }
 
 function selectOption(optionIndex) {
@@ -348,46 +336,6 @@ function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-}
-
-function getMockQuestions() {
-    return [
-        {
-            id: 1,
-            text: "I ___ to school every day.",
-            options: ["go", "goes", "going", "went"],
-            correctOption: 0,
-            points: 2
-        },
-        {
-            id: 2,
-            text: "She ___ English very well.",
-            options: ["speak", "speaks", "speaking", "is speak"],
-            correctOption: 1,
-            points: 2
-        },
-        {
-            id: 3,
-            text: "They ___ playing football now.",
-            options: ["is", "am", "are", "be"],
-            correctOption: 2,
-            points: 2
-        },
-        {
-            id: 4,
-            text: "He ___ to the cinema yesterday.",
-            options: ["go", "goes", "went", "gone"],
-            correctOption: 2,
-            points: 2
-        },
-        {
-            id: 5,
-            text: "We ___ a new car next week.",
-            options: ["buy", "buys", "will buy", "bought"],
-            correctOption: 2,
-            points: 2
-        }
-    ];
 }
 
 function escapeHtml(text) {
