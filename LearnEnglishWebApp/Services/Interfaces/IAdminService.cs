@@ -20,11 +20,11 @@ namespace LearnEnglishWebApp.Services.Interfaces
         Task<bool> DeleteGrammarTopicAsync(long id);
 
         //граммар тесты
-        Task<IEnumerable<GrammarTestDto>> GetAllGrammarTestsAsync();
-        Task<GrammarTestDto> GetGrammarTestByIdAsync(long id);
-        Task<IEnumerable<GrammarTestDto>> GetGrammarTestsByTopicIdAsync(long topicId);
-        Task<GrammarTestDto> AddGrammarTestAsync(AddGrammarTestDto dto);
-        Task<GrammarTestDto> UpdateGrammarTestAsync(long id, UpdateGrammarTestDto dto);
+        Task<IEnumerable<GrammarTestAdminDto>> GetAllGrammarTestsAsync();
+        Task<GrammarTestAdminDto> GetGrammarTestByIdAsync(long id);
+        Task<IEnumerable<GrammarTestAdminDto>> GetGrammarTestsByTopicIdAsync(long topicId);
+        Task<GrammarTestAdminDto> AddGrammarTestAsync(AddGrammarTestDto dto);
+        Task<GrammarTestAdminDto> UpdateGrammarTestAsync(long id, UpdateGrammarTestDto dto);
         Task<bool> DeleteGrammarTestAsync(long id);
 
         //вокаб уроки

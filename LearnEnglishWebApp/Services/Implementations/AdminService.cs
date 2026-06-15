@@ -163,25 +163,25 @@ namespace LearnEnglishWebApp.Services.Implementations
         }
 
         //граммар тесты
-        public async Task<IEnumerable<GrammarTestDto>> GetAllGrammarTestsAsync()
+        public async Task<IEnumerable<GrammarTestAdminDto>> GetAllGrammarTestsAsync()
         {
             var tests = await _repository.GetAllGrammarTestsAsync();
             return tests.Select(MapToGrammarTestDto);
         }
 
-        public async Task<GrammarTestDto> GetGrammarTestByIdAsync(long id)
+        public async Task<GrammarTestAdminDto> GetGrammarTestByIdAsync(long id)
         {
             var test = await _repository.GetGrammarTestByIdAsync(id);
             return test != null ? MapToGrammarTestDto(test) : null;
         }
 
-        public async Task<IEnumerable<GrammarTestDto>> GetGrammarTestsByTopicIdAsync(long topicId)
+        public async Task<IEnumerable<GrammarTestAdminDto>> GetGrammarTestsByTopicIdAsync(long topicId)
         {
             var tests = await _repository.GetGrammarTestsByTopicIdAsync(topicId);
             return tests.Select(MapToGrammarTestDto);
         }
 
-        public async Task<GrammarTestDto> AddGrammarTestAsync(AddGrammarTestDto dto)
+        public async Task<GrammarTestAdminDto> AddGrammarTestAsync(AddGrammarTestDto dto)
         {
             var topic = await _repository.GetGrammarTopicByIdAsync(dto.GrammarTopicId);
             if (topic == null)
@@ -196,6 +196,8 @@ namespace LearnEnglishWebApp.Services.Implementations
                 PassingScore = dto.PassingScore,
                 TimeLimitMinutes = dto.TimeLimitMinutes,
                 OrderIndex = dto.OrderIndex,
+                QuestionsText = dto.QuestionsText,
+                AnswersText = dto.AnswersText,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
@@ -207,7 +209,7 @@ namespace LearnEnglishWebApp.Services.Implementations
             return MapToGrammarTestDto(test);
         }
 
-        public async Task<GrammarTestDto> UpdateGrammarTestAsync(long id, UpdateGrammarTestDto dto)
+        public async Task<GrammarTestAdminDto> UpdateGrammarTestAsync(long id, UpdateGrammarTestDto dto)
         {
             var test = await _repository.GetGrammarTestByIdAsync(id);
             if (test == null)
@@ -220,6 +222,8 @@ namespace LearnEnglishWebApp.Services.Implementations
             test.PassingScore = dto.PassingScore;
             test.TimeLimitMinutes = dto.TimeLimitMinutes;
             test.OrderIndex = dto.OrderIndex;
+            test.QuestionsText = dto.QuestionsText;
+            test.AnswersText = dto.AnswersText;
 
             _repository.UpdateGrammarTest(test);
             await _repository.SaveChangesAsync();
@@ -432,17 +436,28 @@ namespace LearnEnglishWebApp.Services.Implementations
             };
         }
 
-        private GrammarTestDto MapToGrammarTestDto(GrammarTest test)
+        private GrammarTestAdminDto MapToGrammarTestAdminDto(GrammarTest test)
         {
-            return new GrammarTestDto
+            return new GrammarTestAdminDto
             {
                 Id = test.Id,
+                GrammarTopicId = test.GrammarTopicId,
                 Title = test.Title,
                 Level = test.Level,
                 QuestionCount = test.QuestionCount,
                 PassingScore = test.PassingScore,
                 TimeLimitMinutes = test.TimeLimitMinutes,
-                IsActive = test.IsActive
+                OrderIndex = test.OrderIndex,
+                IsActive = test.IsActive,
+                CreatedAt = test.CreatedAt,
+                QuestionsText = test.QuestionsText,
+                AnswersText = test.AnswersText,
+                GrammarTopic = test.GrammarTopic != null ? new GrammarTopicSimpleDto
+                {
+                    Id = test.GrammarTopic.Id,
+                    Title = test.GrammarTopic.Title,
+                    Level = test.GrammarTopic.Level
+                } : null
             };
         }
 
