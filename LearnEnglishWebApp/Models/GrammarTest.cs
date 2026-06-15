@@ -27,6 +27,9 @@ namespace LearnEnglishWebApp.Models
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        public string? QuestionsText { get; set; }    
+        public string? AnswersText { get; set; }     
+
         [ForeignKey("GrammarTopicId")]
         public GrammarTopic GrammarTopic { get; set; }
 
