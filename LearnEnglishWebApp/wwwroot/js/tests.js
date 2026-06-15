@@ -42,7 +42,7 @@ function displayTests(tests) {
 
         if (test.isCompleted) {
             cardClass = 'completed';
-            statusBadge = '<span class="completed-badge">✓ Пройден</span>';
+            statusBadge = '<span class="completed-badge">Пройден</span>';
         }
 
         return `

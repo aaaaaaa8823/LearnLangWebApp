@@ -287,7 +287,7 @@ function displayWords(words) {
             </div>
             <div class="word-actions">
                 <button class="btn-add" onclick="addWordToLearning(${word.id}, '${escapeHtml(word.word)}')">
-                    + Добавить
+                    Добавить
                 </button>
             </div>
             ${word.examples && word.examples.length > 0 ? `
@@ -377,7 +377,7 @@ async function addWordToLearning(wordId, wordText) {
         if (wordItem) {
             const button = wordItem.querySelector('.btn-add');
             if (button) {
-                button.textContent = '✓ Добавлено';
+                button.textContent = 'Добавлено';
                 button.disabled = true;
                 button.style.background = '#4caf50';
             }

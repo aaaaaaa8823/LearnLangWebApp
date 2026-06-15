@@ -378,7 +378,7 @@ function resetForm() {
     questions = [];
     renderQuestions();
     addQuestion();
-    document.getElementById('formTitle').textContent = '➕ Добавить новый тест';
+    document.getElementById('formTitle').textContent = 'Добавить новый тест';
 }
 
 function showMessage(text, type) {
