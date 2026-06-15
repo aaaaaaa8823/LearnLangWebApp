@@ -80,16 +80,31 @@ function displayTests(tests) {
 }
 
 function searchTests() {
-    const searchTerm = document.getElementById('testSearch').value.toLowerCase();
+    const searchInput = document.getElementById('testSearch');
+    if (!searchInput) {
+        console.error('Элемент testSearch не найден');
+        return;
+    }
+
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    console.log('Поиск:', searchTerm);
 
     if (!searchTerm) {
         displayTests(allTests);
         return;
     }
 
-    const filtered = allTests.filter(test =>
-        test.title.toLowerCase().includes(searchTerm)
-    );
+    const filtered = allTests.filter(test => {
+        const title = (test.title || '').toLowerCase();
+        const topicTitle = (test.topicTitle || '').toLowerCase();
+        const level = (test.level || '').toLowerCase();
+
+        return title.includes(searchTerm) ||
+            topicTitle.includes(searchTerm) ||
+            level.includes(searchTerm);
+    });
+
+    console.log('Найдено тестов:', filtered.length);
     displayTests(filtered);
 }
 

@@ -481,3 +481,129 @@
     border-color: #1a3b5d;
 }
 
+/* Стили для динамических вопросов */
+.questions-block {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 2px solid #eef2f6;
+}
+
+    .questions-block h3 {
+        color: #1a3b5d;
+        margin-bottom: 20px;
+        font-size: 1.2rem;
+    }
+
+.question-card {
+    background: #f8fafd;
+    border: 1px solid #eef2f6;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eef2f6;
+}
+
+.question-number {
+    font-weight: 600;
+    color: #1a3b5d;
+}
+
+.btn-remove-question {
+    background: none;
+    border: none;
+    color: #f44336;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.question-text-input {
+    margin-bottom: 15px;
+}
+
+    .question-text-input label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #1a3b5d;
+    }
+
+    .question-text-input input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #e0e5ec;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        box-sizing: border-box;
+    }
+
+.options-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: #1a3b5d;
+}
+
+.options-list-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.option-row {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.option-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #e0e5ec;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.option-correct {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem;
+    color: #6b7a8f;
+}
+
+    .option-correct input {
+        margin: 0;
+    }
+
+.btn-add-question {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #eef2f6;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #1a3b5d;
+}
+
+.btn-add-question:hover {
+    background: #e4e8ef;
+    border-color: #1a3b5d;
+}
+
+.empty-questions {
+    text-align: center;
+    padding: 40px;
+    color: #6b7a8f;
+    background: #f8fafd;
+    border-radius: 8px;
+}
+
