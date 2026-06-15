@@ -4,7 +4,6 @@ using LearnEnglishWebApp.DTOs.Response;
 using LearnEnglishWebApp.Models;
 using LearnEnglishWebApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 
 namespace LearnEnglishWebApp.Services.Implementations
 {
@@ -34,15 +33,11 @@ namespace LearnEnglishWebApp.Services.Implementations
                     .Where(tr => tr.UserId == userId && tr.TestId == test.Id && tr.TestType == "grammar")
                     .ToListAsync();
 
-                results.Add(MapToDto(test, userResults));
+                var questions = ParseQuestions(test.QuestionsText, test.AnswersText);
+                results.Add(MapToDto(test, userResults, questions));
             }
 
             return results.OrderBy(t => t.Level).ThenBy(t => t.Id);
-        }
-
-        public async Task<TestResultDto> GetBestResultAsync(long userId, long testId)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<GrammarTestDetailDto> GetTestByIdAsync(long userId, long testId)
@@ -54,7 +49,9 @@ namespace LearnEnglishWebApp.Services.Implementations
                 .Where(tr => tr.UserId == userId && tr.TestId == testId && tr.TestType == "grammar")
                 .ToListAsync();
 
-            return MapToDto(test, userResults);
+            var questions = ParseQuestions(test.QuestionsText, test.AnswersText);
+
+            return MapToDto(test, userResults, questions);
         }
 
         public async Task<IEnumerable<GrammarTestDetailDto>> GetTestByTopicAsync(long userId, long topicId)
@@ -68,7 +65,8 @@ namespace LearnEnglishWebApp.Services.Implementations
                     .Where(tr => tr.UserId == userId && tr.TestId == test.Id && tr.TestType == "grammar")
                     .ToListAsync();
 
-                results.Add(MapToDto(test, userResults));
+                var questions = ParseQuestions(test.QuestionsText, test.AnswersText);
+                results.Add(MapToDto(test, userResults, questions));
             }
 
             return results.OrderBy(t => t.OrderIndex);
@@ -85,38 +83,11 @@ namespace LearnEnglishWebApp.Services.Implementations
                     .Where(tr => tr.UserId == userId && tr.TestId == test.Id && tr.TestType == "grammar")
                     .ToListAsync();
 
-                results.Add(MapToDto(test, userResults));
+                var questions = ParseQuestions(test.QuestionsText, test.AnswersText);
+                results.Add(MapToDto(test, userResults, questions));
             }
 
             return results.OrderBy(t => t.OrderIndex);
-        }
-
-        public async Task<IEnumerable<TestResultDto>> GetUserTestResultsAsync(long userId, long? testId = null)
-        {
-            var query = _context.TestResults
-               .Where(tr => tr.UserId == userId && tr.TestType == "grammar");
-
-            if (testId.HasValue)
-            {
-                query = query.Where(tr => tr.TestId == testId.Value);
-            }
-
-            var results = await query
-                .OrderByDescending(tr => tr.CompletedAt)
-                .ToListAsync();
-
-            return results.Select(r => new TestResultDto
-            {
-                Id = r.Id,
-                TestId = r.TestId,
-                Score = r.Score,
-                MaxScore = r.MaxScore,
-                Percentage = r.Percentage,
-                IsPassed = r.IsPassed,
-                AttemptNumber = r.AttemptNumber,
-                TimeSpentSeconds = r.TimeSpentSeconds,
-                CompletedAt = r.CompletedAt
-            });
         }
 
         public async Task<TestResultDto> SubmitTestResultAsync(long userId, SubmitTestResultDto result)
@@ -146,11 +117,6 @@ namespace LearnEnglishWebApp.Services.Implementations
                     CompletedAt = DateTime.UtcNow
                 };
 
-                if (result.Answers != null && result.Answers.Any())
-                {
-                    var answersJson = JsonSerializer.Serialize(result.Answers);
-                }
-
                 _context.TestResults.Add(testResult);
                 await _context.SaveChangesAsync();
 
@@ -177,7 +143,96 @@ namespace LearnEnglishWebApp.Services.Implementations
             }
         }
 
-        private GrammarTestDetailDto MapToDto(GrammarTest test, List<TestResult> results)
+        public async Task<IEnumerable<TestResultDto>> GetUserTestResultsAsync(long userId, long? testId = null)
+        {
+            var query = _context.TestResults
+                .Where(tr => tr.UserId == userId && tr.TestType == "grammar");
+
+            if (testId.HasValue)
+            {
+                query = query.Where(tr => tr.TestId == testId.Value);
+            }
+
+            var results = await query
+                .OrderByDescending(tr => tr.CompletedAt)
+                .ToListAsync();
+
+            return results.Select(r => new TestResultDto
+            {
+                Id = r.Id,
+                TestId = r.TestId,
+                Score = r.Score,
+                MaxScore = r.MaxScore,
+                Percentage = r.Percentage,
+                IsPassed = r.IsPassed,
+                AttemptNumber = r.AttemptNumber,
+                TimeSpentSeconds = r.TimeSpentSeconds,
+                CompletedAt = r.CompletedAt
+            });
+        }
+
+
+        private List<QuestionDto> ParseQuestions(string questionsText, string answersText)
+        {
+            var questions = new List<QuestionDto>();
+
+            if (string.IsNullOrEmpty(questionsText)) return questions;
+
+            var questionLines = questionsText.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            var answerLines = answersText?.Split('\n', StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
+
+            for (int i = 0; i < questionLines.Length; i++)
+            {
+                var line = questionLines[i].Trim();
+                if (string.IsNullOrEmpty(line)) continue;
+
+                string questionText = line;
+                List<string> options = new List<string>();
+                int correctOptionIndex = 0;
+
+                if (line.Contains('|'))
+                {
+                    var parts = line.Split('|');
+                    questionText = parts[0].Trim();
+
+                    for (int j = 1; j < parts.Length; j++)
+                    {
+                        options.Add(parts[j].Trim());
+                    }
+                }
+
+                string correctAnswer = i < answerLines.Length ? answerLines[i].Trim() : "";
+
+                if (options.Count == 0)
+                {
+                    options = new List<string> { "True", "False" };
+                    correctOptionIndex = correctAnswer?.ToLower() == "true" ? 0 : 1;
+                }
+                else
+                {
+                    correctOptionIndex = options.FindIndex(o =>
+                        string.Equals(o, correctAnswer, StringComparison.OrdinalIgnoreCase));
+
+                    if (correctOptionIndex == -1 && options.Count > 0)
+                    {
+                        correctOptionIndex = 0; 
+                    }
+                }
+
+                questions.Add(new QuestionDto
+                {
+                    Id = i + 1,
+                    Text = questionText,
+                    Options = options,
+                    CorrectOption = correctOptionIndex,
+                    Points = 2
+                });
+            }
+
+            return questions;
+        }
+
+        private GrammarTestDetailDto MapToDto(GrammarTest test, List<TestResult> results, List<QuestionDto> questions)
         {
             var bestResult = results.OrderByDescending(r => r.Percentage).FirstOrDefault();
 
@@ -188,13 +243,15 @@ namespace LearnEnglishWebApp.Services.Implementations
                 TopicTitle = test.GrammarTopic?.Title ?? "",
                 Level = test.Level,
                 QuestionCount = test.QuestionCount,
+                OrderIndex = test.OrderIndex,
                 PassingScore = test.PassingScore,
                 TimeLimitMinutes = test.TimeLimitMinutes,
                 IsActive = test.IsActive,
                 IsCompleted = results.Any(r => r.IsPassed),
                 BestScore = bestResult?.Score,
                 BestPercentage = bestResult?.Percentage,
-                AttemptCount = results.Count
+                AttemptCount = results.Count,
+                Questions = questions ?? new List<QuestionDto>()
             };
         }
     }

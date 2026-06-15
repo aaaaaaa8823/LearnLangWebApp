@@ -16,6 +16,8 @@
         public double? BestPercentage { get; set; }
         public int AttemptCount { get; set; }
 
+        public List<QuestionDto> Questions { get; set; } = new List<QuestionDto>();
+
     }
 
     public class SubmitTestResultDto

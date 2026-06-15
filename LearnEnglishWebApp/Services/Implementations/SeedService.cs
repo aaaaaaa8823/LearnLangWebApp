@@ -29,7 +29,6 @@ namespace LearnEnglishWebApp.Services.Implementations
                 await SeedVocabTestsAsync();
                 await UpdateGrammarTopicsContentAsync();
                 await UpdateVocabLessonsContentAsync();
-                await UpdateGrammarTestsContentAsync();
 
                 _logger.LogInformation("Заполнение завершено");
             }
@@ -176,68 +175,71 @@ namespace LearnEnglishWebApp.Services.Implementations
 
         private async Task SeedGrammarTestsAsync()
         {
-            if (await _context.GrammarTests.AnyAsync())
+            var existingTests = await _context.GrammarTests.ToListAsync();
+            var hasValidTests = existingTests.Any(t => !string.IsNullOrEmpty(t.QuestionsText));
+
+            if (hasValidTests)
             {
-                _logger.LogInformation("Грамматические тесты уже заполнены");
+                _logger.LogInformation("Грамматические тесты с вопросами уже существуют");
                 return;
+            }
+
+            var emptyTests = existingTests.Where(t => string.IsNullOrEmpty(t.QuestionsText)).ToList();
+            if (emptyTests.Any())
+            {
+                _context.GrammarTests.RemoveRange(emptyTests);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation($"Удалено {emptyTests.Count} пустых тестов");
             }
 
             var presentSimple = await _context.GrammarTopics
                 .FirstOrDefaultAsync(t => t.Title == "Present Simple");
 
-            if (presentSimple != null)
+            if (presentSimple == null)
             {
-                var tests = new List<GrammarTest>
-        {
-            new GrammarTest
-            {
-                GrammarTopicId = presentSimple.Id,
-                Title = "Present Simple - Базовый тест",
-                Level = "A1",
-                QuestionCount = 10,
-                PassingScore = 70,
-                TimeLimitMinutes = 10,
-                OrderIndex = 1,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
+                _logger.LogWarning("Тема Present Simple не найдена, тесты не добавлены");
+                return;
+            }
 
-                QuestionsText = @"What is the correct form? I ___ to school every day.
-She ___ English very well.
-___ you like coffee?
-We ___ to the park on Sundays.
-He ___ breakfast at 8 AM.
-They ___ playing football now.
-My mother ___ a doctor.
-___ she speak Spanish?
-The children ___ playing in the garden.
-It often ___ in winter.",
-                AnswersText = @"go
+            var tests = new List<GrammarTest>
+    {
+        new GrammarTest
+        {
+            GrammarTopicId = presentSimple.Id,
+            Title = "Present Simple - Тест 1",
+            Level = "A1",
+            QuestionCount = 5,
+            PassingScore = 60,
+            TimeLimitMinutes = 10,
+            OrderIndex = 1,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            QuestionsText = @"I ___ to school every day. go | goes | going | went
+She ___ English very well. speak | speaks | speaking | spoke
+___ you like coffee? Do | Does | Is | Are
+We ___ to the park on Sundays. go | goes | going | went
+He ___ breakfast at 8 AM. have | has | having | had",
+            AnswersText = @"go
 speaks
 Do
 go
-has
-are
-is
-Does
-are
-snows"
-            }
-        };
+has"
+        }
+    };
 
-                foreach (var test in tests)
+            foreach (var test in tests)
+            {
+                var exists = await _context.GrammarTests
+                    .AnyAsync(t => t.Title == test.Title && t.GrammarTopicId == test.GrammarTopicId);
+
+                if (!exists)
                 {
-                    var exists = await _context.GrammarTests
-                        .AnyAsync(t => t.Title == test.Title && t.GrammarTopicId == test.GrammarTopicId);
-
-                    if (!exists)
-                    {
-                        await _context.GrammarTests.AddAsync(test);
-                    }
+                    await _context.GrammarTests.AddAsync(test);
                 }
-
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Добавлены грамматические тесты с вопросами");
             }
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation($"Добавлено {tests.Count} грамматических тестов с вопросами");
         }
 
         private async Task SeedVocabLessonsAsync()
@@ -563,42 +565,6 @@ My grandmother lives with us.";
             _logger.LogInformation("Контент вокабулярных уроков обновлён");
         }
 
-        private async Task UpdateGrammarTestsContentAsync()
-        {
-            _logger.LogInformation("Обновляем контент грамматических тестов...");
-
-            var presentSimpleTest = await _context.GrammarTests
-                .FirstOrDefaultAsync(t => t.Title == "Present Simple - Базовый тест");
-
-            if (presentSimpleTest != null && string.IsNullOrEmpty(presentSimpleTest.QuestionsText))
-            {
-                presentSimpleTest.QuestionsText = @"What is the correct form? I ___ to school every day.
-She ___ English very well.
-___ you like coffee?
-We ___ to the park on Sundays.
-He ___ breakfast at 8 AM.
-They ___ playing football now.
-My mother ___ a doctor.
-___ she speak Spanish?
-The children ___ playing in the garden.
-It often ___ in winter.";
-
-                presentSimpleTest.AnswersText = @"go
-speaks
-Do
-go
-has
-are
-is
-Does
-are
-snows";
-
-                _context.GrammarTests.Update(presentSimpleTest);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Контент грамматических тестов обновлён");
-            }
-        }
 
         private async Task CreateDefaultCollectionsForUser(long userId)
         {
