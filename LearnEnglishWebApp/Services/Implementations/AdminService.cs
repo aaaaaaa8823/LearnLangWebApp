@@ -436,7 +436,7 @@ namespace LearnEnglishWebApp.Services.Implementations
             };
         }
 
-        private GrammarTestAdminDto MapToGrammarTestAdminDto(GrammarTest test)
+        private GrammarTestAdminDto MapToGrammarTestDto(GrammarTest test)
         {
             return new GrammarTestAdminDto
             {

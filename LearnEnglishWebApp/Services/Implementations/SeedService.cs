@@ -29,6 +29,7 @@ namespace LearnEnglishWebApp.Services.Implementations
                 await SeedVocabTestsAsync();
                 await UpdateGrammarTopicsContentAsync();
                 await UpdateVocabLessonsContentAsync();
+                await UpdateGrammarTestsContentAsync();
 
                 _logger.LogInformation("Заполнение завершено");
             }
@@ -187,19 +188,41 @@ namespace LearnEnglishWebApp.Services.Implementations
             if (presentSimple != null)
             {
                 var tests = new List<GrammarTest>
-                {
-                    new GrammarTest
-                    {
-                        GrammarTopicId = presentSimple.Id,
-                        Title = "Present Simple - Тест 1",
-                        Level = "A1",
-                        QuestionCount = 5,
-                        PassingScore = 60,
-                        TimeLimitMinutes = 10,
-                        OrderIndex = 1,
-                        CreatedAt = DateTime.UtcNow
-                    }
-                };
+        {
+            new GrammarTest
+            {
+                GrammarTopicId = presentSimple.Id,
+                Title = "Present Simple - Базовый тест",
+                Level = "A1",
+                QuestionCount = 10,
+                PassingScore = 70,
+                TimeLimitMinutes = 10,
+                OrderIndex = 1,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+
+                QuestionsText = @"What is the correct form? I ___ to school every day.
+She ___ English very well.
+___ you like coffee?
+We ___ to the park on Sundays.
+He ___ breakfast at 8 AM.
+They ___ playing football now.
+My mother ___ a doctor.
+___ she speak Spanish?
+The children ___ playing in the garden.
+It often ___ in winter.",
+                AnswersText = @"go
+speaks
+Do
+go
+has
+are
+is
+Does
+are
+snows"
+            }
+        };
 
                 foreach (var test in tests)
                 {
@@ -213,7 +236,7 @@ namespace LearnEnglishWebApp.Services.Implementations
                 }
 
                 await _context.SaveChangesAsync();
-                _logger.LogInformation($"Добавлено грамматических тестов");
+                _logger.LogInformation("Добавлены грамматические тесты с вопросами");
             }
         }
 
@@ -538,6 +561,43 @@ My grandmother lives with us.";
 
             await _context.SaveChangesAsync();
             _logger.LogInformation("Контент вокабулярных уроков обновлён");
+        }
+
+        private async Task UpdateGrammarTestsContentAsync()
+        {
+            _logger.LogInformation("Обновляем контент грамматических тестов...");
+
+            var presentSimpleTest = await _context.GrammarTests
+                .FirstOrDefaultAsync(t => t.Title == "Present Simple - Базовый тест");
+
+            if (presentSimpleTest != null && string.IsNullOrEmpty(presentSimpleTest.QuestionsText))
+            {
+                presentSimpleTest.QuestionsText = @"What is the correct form? I ___ to school every day.
+She ___ English very well.
+___ you like coffee?
+We ___ to the park on Sundays.
+He ___ breakfast at 8 AM.
+They ___ playing football now.
+My mother ___ a doctor.
+___ she speak Spanish?
+The children ___ playing in the garden.
+It often ___ in winter.";
+
+                presentSimpleTest.AnswersText = @"go
+speaks
+Do
+go
+has
+are
+is
+Does
+are
+snows";
+
+                _context.GrammarTests.Update(presentSimpleTest);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Контент грамматических тестов обновлён");
+            }
         }
 
         private async Task CreateDefaultCollectionsForUser(long userId)
